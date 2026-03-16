@@ -1,23 +1,68 @@
 // HRC Composites Hub — api/refresh.js
-// Dual source: Google News RSS + OpenAI web search (if OPENAI_API_KEY is set)
+// Sources: Direct RSS feeds from industry websites + OpenAI (if key set)
 
 const RSS_FEEDS = [
-  { url: 'https://news.google.com/rss/search?q=Europe+carbon+fiber+composite+automotive&hl=en-US&gl=US&ceid=US:en', region: 'eu', sector: 'motor' },
-  { url: 'https://news.google.com/rss/search?q=Europe+aerospace+carbon+fiber+composite+Airbus&hl=en-US&gl=US&ceid=US:en', region: 'eu', sector: 'aerospace' },
-  { url: 'https://news.google.com/rss/search?q=Europe+carbon+fiber+recycling+composite+sustainability&hl=en-US&gl=US&ceid=US:en', region: 'eu', sector: 'recycling' },
-  { url: 'https://news.google.com/rss/search?q=JEC+composites+Europe+materials+innovation&hl=en-US&gl=US&ceid=US:en', region: 'eu', sector: 'materials' },
-  { url: 'https://news.google.com/rss/search?q=China+carbon+fiber+composite+automotive+EV&hl=en-US&gl=US&ceid=US:en', region: 'china', sector: 'motor' },
-  { url: 'https://news.google.com/rss/search?q=China+eVTOL+flying+car+carbon+fiber+aerospace&hl=en-US&gl=US&ceid=US:en', region: 'china', sector: 'aerospace' },
-  { url: 'https://news.google.com/rss/search?q=China+carbon+fiber+wind+turbine+blade+recycling&hl=en-US&gl=US&ceid=US:en', region: 'china', sector: 'recycling' },
-  { url: 'https://news.google.com/rss/search?q=China+CFRP+carbon+fiber+precursor+manufacturing&hl=en-US&gl=US&ceid=US:en', region: 'china', sector: 'materials' },
-  { url: 'https://news.google.com/rss/search?q=USA+carbon+fiber+composite+automotive+lightweight&hl=en-US&gl=US&ceid=US:en', region: 'usa', sector: 'motor' },
-  { url: 'https://news.google.com/rss/search?q=USA+aerospace+carbon+fiber+Boeing+composite&hl=en-US&gl=US&ceid=US:en', region: 'usa', sector: 'aerospace' },
-  { url: 'https://news.google.com/rss/search?q=USA+carbon+fiber+recycling+composite+sustainability&hl=en-US&gl=US&ceid=US:en', region: 'usa', sector: 'recycling' },
-  { url: 'https://news.google.com/rss/search?q=North+America+composites+Hexcel+Cytec+materials&hl=en-US&gl=US&ceid=US:en', region: 'usa', sector: 'materials' },
-  { url: 'https://news.google.com/rss/search?q=Toray+Hexcel+Solvay+Teijin+SGL+composites&hl=en-US&gl=US&ceid=US:en', region: 'global', sector: 'materials' },
-  { url: 'https://news.google.com/rss/search?q=global+carbon+fiber+composite+market+2026&hl=en-US&gl=US&ceid=US:en', region: 'global', sector: 'materials' },
-  { url: 'https://news.google.com/rss/search?q=carbon+fiber+recycling+circular+economy+global&hl=en-US&gl=US&ceid=US:en', region: 'global', sector: 'recycling' },
-  { url: 'https://news.google.com/rss/search?q=global+aerospace+composite+carbon+fiber+aircraft&hl=en-US&gl=US&ceid=US:en', region: 'global', sector: 'aerospace' },
+  // ── AEROSPACE ──
+  { url: 'https://www.aviationweek.com/rss.xml',                       source: 'Aviation Week',              region: 'global', sector: 'aerospace' },
+  { url: 'https://www.ainonline.com/rss.xml',                          source: 'AIN Online',                 region: 'global', sector: 'aerospace' },
+  { url: 'https://spacenews.com/feed/',                                source: 'Space News',                 region: 'global', sector: 'aerospace' },
+  { url: 'https://www.aviationbusinessnews.com/feed/',                 source: 'Aviation Business News',     region: 'global', sector: 'aerospace' },
+  { url: 'https://www.aerotime.aero/feed',                             source: 'Aerotime',                   region: 'global', sector: 'aerospace' },
+  { url: 'https://www.space.com/feeds/all',                            source: 'Space.com',                  region: 'global', sector: 'aerospace' },
+  { url: 'https://www.aero-mag.com/category/news/feed',                source: 'Aerospace Manufacturing',    region: 'eu',     sector: 'aerospace' },
+
+  // ── AUTOMOTIVE ──
+  { url: 'https://www.autonews.com/rss/rss_latest.rss',                source: 'Automotive News',            region: 'global', sector: 'motor' },
+  { url: 'https://www.motortrend.com/feeds/all/',                      source: 'MotorTrend',                 region: 'usa',    sector: 'motor' },
+  { url: 'https://www.automotivedive.com/feeds/news_rss/',             source: 'Automotive Dive',            region: 'usa',    sector: 'motor' },
+  { url: 'https://www.motorauthority.com/rss/all.rss',                 source: 'Motor Authority',            region: 'usa',    sector: 'motor' },
+  { url: 'https://www.automoblog.com/feed/',                           source: 'Automoblog',                 region: 'usa',    sector: 'motor' },
+  { url: 'https://www.auto-motor-und-sport.de/feed/',                  source: 'Auto Motor Sport',           region: 'eu',     sector: 'motor' },
+  { url: 'https://www.motort16.com/feed/',                             source: 'Motort16',                   region: 'eu',     sector: 'motor' },
+  { url: 'https://www.auto-revista.com/feed/',                         source: 'Auto Revista',               region: 'eu',     sector: 'motor' },
+  { url: 'https://ai-online.com/feed/',                                source: 'AI Online',                  region: 'global', sector: 'motor' },
+  { url: 'https://futuretransport-news.com/feed/',                     source: 'Future Transport News',      region: 'eu',     sector: 'motor' },
+
+  // ── COMPOSITES (primary sources) ──
+  { url: 'https://www.compositesworld.com/rss/all',                    source: 'CompositesWorld',            region: 'global', sector: 'materials' },
+  { url: 'https://www.composites.media/feed',                          source: 'Composites Media',           region: 'eu',     sector: 'materials' },
+  { url: 'https://www.jeccomposites.com/feed/',                        source: 'JEC Group',                  region: 'eu',     sector: 'materials' },
+  { url: 'https://www.compositestoday.com/feed/',                      source: 'Composites Today',           region: 'global', sector: 'materials' },
+  { url: 'https://www.compositesweekly.com/feed/',                     source: 'Composites Weekly',          region: 'global', sector: 'materials' },
+  { url: 'https://eucia.eu/category/news/feed',                        source: 'EuCIA',                      region: 'eu',     sector: 'recycling' },
+
+  // ── UAV / DRONE ──
+  { url: 'https://dronelife.com/feed/',                                source: 'DroneLife',                  region: 'global', sector: 'aerospace' },
+  { url: 'https://dronedj.com/feed/',                                  source: 'DroneDJ',                    region: 'global', sector: 'aerospace' },
+  { url: 'https://www.commercialuavnews.com/feed',                     source: 'Commercial UAV News',        region: 'global', sector: 'aerospace' },
+  { url: 'https://evtolinsights.com/feed/',                            source: 'eVTOL Insights',             region: 'global', sector: 'aerospace' },
+  { url: 'https://www.flyingmag.com/feed/',                            source: 'Flying Magazine',            region: 'usa',    sector: 'aerospace' },
+  { url: 'https://evtol.news/feed/',                                   source: 'eVTOL News',                 region: 'global', sector: 'aerospace' },
+
+  // ── ENERGY / WIND ──
+  { url: 'https://www.energybusinessreview.com/feed/',                 source: 'Energy Business Review',     region: 'global', sector: 'construction' },
+  { url: 'https://www.aitenergymag.com/feed/',                         source: 'AIT Energy',                 region: 'global', sector: 'construction' },
+  { url: 'https://esingenieria.net/feed/',                             source: 'ES Ingenieria',              region: 'eu',     sector: 'construction' },
+  { url: 'https://www.enr.com/rss/topics/652-news',                    source: 'ENR',                        region: 'usa',    sector: 'construction' },
+  { url: 'https://www.engineerlive.com/rss.xml',                       source: 'Engineer Live',              region: 'eu',     sector: 'materials' },
+  { url: 'https://interestingengineering.com/feed',                    source: 'Interesting Engineering',    region: 'global', sector: 'materials' },
+  { url: 'https://www.emobility-engineering.com/feed/',                source: 'eMobility Engineering',      region: 'eu',     sector: 'motor' },
+  { url: 'https://www.h2-view.com/news/all-news/feed/',                source: 'H2 View',                   region: 'global', sector: 'construction' },
+  { url: 'https://www.hydrogeninsight.com/feed',                       source: 'Hydrogen Insight',           region: 'global', sector: 'construction' },
+  { url: 'https://hydrogen-central.com/feed/',                         source: 'Hydrogen Central',           region: 'global', sector: 'construction' },
+
+  // ── MATERIALS ──
+  { url: 'https://www.azom.com/rss-feed.xml',                         source: 'AZO Materials',              region: 'global', sector: 'materials' },
+
+  // ── RAIL ──
+  { url: 'https://www.globalrailwayreview.com/feed/',                  source: 'Global Railway Review',      region: 'global', sector: 'construction' },
+  { url: 'https://www.railnews.co.uk/feed/',                           source: 'Rail News',                  region: 'eu',     sector: 'construction' },
+  { url: 'https://railmarket.com/feed/',                               source: 'Rail Market',                region: 'global', sector: 'construction' },
+  { url: 'https://www.railbusinessdaily.com/feed/',                    source: 'Rail Business Daily',        region: 'eu',     sector: 'construction' },
+
+  // ── WIND / ENERGY GLOBAL ──
+  { url: 'https://www.windindustry.pl/en/news/feed',                   source: 'Wind Industry PL',          region: 'eu',     sector: 'construction' },
+  { url: 'https://www.energyglobal.com/news/feed/',                    source: 'Energy Global',              region: 'global', sector: 'construction' },
 ];
 
 const AI_PROMPTS = [
@@ -28,15 +73,16 @@ const AI_PROMPTS = [
 ];
 
 const SECTOR_RULES = [
-  { sector: 'motor',     words: ['automotive','vehicle','car','ev','electric vehicle','motorsport','formula','bmw','ferrari','mercedes','audi','toyota','volkswagen','supercar','flying car','chassis','lightweighting','van','truck'] },
-  { sector: 'aerospace', words: ['aerospace','aircraft','airbus','boeing','aviation','satellite','uav','drone','space','fuselage','wing','rocket','evtol','helicopter','propeller','nacelle'] },
-  { sector: 'recycling', words: ['recycl','reclaim','end-of-life','circular','bio-based','sustainable','degradation','reuse','reprocess','closed-loop','hemp','flax','natural fiber','natural fibre'] },
-  { sector: 'materials', words: ['carbon fiber','carbon fibre','cfrp','prepreg','epoxy','resin','thermoplastic','autoclave','infusion','pultrusion','filament winding','precursor','tensile strength','modulus'] },
+  { sector: 'motor',        words: ['automotive','vehicle','car','ev','electric vehicle','motorsport','formula','bmw','ferrari','mercedes','audi','toyota','volkswagen','supercar','flying car','chassis','lightweighting','van','truck','motort'] },
+  { sector: 'aerospace',    words: ['aerospace','aircraft','airbus','boeing','aviation','satellite','uav','drone','space','fuselage','wing','rocket','evtol','helicopter','propeller','nacelle','easa','faa'] },
+  { sector: 'recycling',    words: ['recycl','reclaim','end-of-life','circular','bio-based','sustainable','degradation','reuse','reprocess','closed-loop','hemp','flax','natural fiber','natural fibre','wind blade'] },
+  { sector: 'construction', words: ['construction','bridge','infrastructure','rebar','wind turbine','blade','building','structural','concrete','civil','offshore','marine','pressure vessel','pipeline','rail','railway','hydrogen','h2','energy'] },
+  { sector: 'materials',    words: ['carbon fiber','carbon fibre','cfrp','prepreg','epoxy','resin','thermoplastic','autoclave','infusion','pultrusion','filament winding','precursor','tensile','modulus','composite material'] },
 ];
 const REGION_RULES = [
-  { region: 'china', words: ['china','chinese','beijing','shanghai','guangzhou','shenzhen','zhongfu','jinggong','dreame','xpeng','govy','mingyang','zhihang'] },
-  { region: 'eu',    words: ['europe','european','germany','german','france','french','italy','italian','uk','british','airbus','daher','bmw','volkswagen','audi','jec world'] },
-  { region: 'usa',   words: ['usa','united states','american','boeing','joby','hexcel','cytec','nasa','lockheed','northrop','california','michigan'] },
+  { region: 'china', words: ['china','chinese','beijing','shanghai','guangzhou','shenzhen','zhongfu','jinggong','dreame','xpeng','govy','mingyang','zhihang','cgtn','sinopec'] },
+  { region: 'eu',    words: ['europe','european','germany','german','france','french','italy','italian','uk','british','airbus','daher','bmw','volkswagen','audi','jec world','eucia'] },
+  { region: 'usa',   words: ['usa','united states','american','boeing','joby','hexcel','cytec','nasa','lockheed','northrop','california','michigan','faa'] },
 ];
 
 function categSector(title, desc) {
@@ -49,19 +95,15 @@ function categRegion(title, desc, fallback) {
   for (const r of REGION_RULES) { if (r.words.some(w => t.includes(w))) return r.region; }
   return fallback;
 }
-
-// Strip ALL html tags and entities — Google News descriptions are just HTML wrappers
 function stripHtml(str) {
   return (str || '')
-    .replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi, '')
-    .replace(/<font\b[^>]*>[\s\S]*?<\/font>/gi, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/&nbsp;/g, ' ').replace(/&#?\w+;/g, '')
     .replace(/\s+/g, ' ').trim();
 }
 
-function parseRSS(xml) {
+function parseRSS(xml, feedSource) {
   const items = [];
   const rx = /<item[^>]*>([\s\S]*?)<\/item>/gi;
   let m;
@@ -71,25 +113,12 @@ function parseRSS(xml) {
       const r = b.match(new RegExp('<' + tag + '(?:[^>]*)>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/' + tag + '>', 'i'));
       return r ? r[1] : '';
     };
-
-    // Title: strip " - Source" suffix Google appends
-    const rawTitle = stripHtml(get('title'));
-    const srcMatch = rawTitle.match(/ - ([^-]{3,60})$/);
-    const title    = srcMatch ? rawTitle.replace(/ - [^-]+$/, '').trim() : rawTitle;
-    const source   = srcMatch ? srcMatch[1].trim() : 'Google News';
-
-    // URL: use the <link> tag — Google redirect URLs work fine for click-through
-    const link = (b.match(/<link>([^<\s]+)/) || [])[1] || 
-                 (b.match(/href="(https?:\/\/[^"]+)"/) || [])[1] || '';
-
-    // Summary: Google descriptions are just HTML wrappers with no real text.
-    // Strip all HTML — if empty, leave blank (title carries the meaning).
-    const rawDesc = get('description');
-    const desc    = stripHtml(rawDesc).replace(/^[a-z\s]{0,5}$/i, '').slice(0, 300);
-
-    const date = get('pubDate') || get('dc:date') || '';
-
-    if (title && title.length > 8 && link) {
+    const title  = stripHtml(get('title')).trim();
+    const link   = stripHtml(get('link')).trim() || (b.match(/href="(https?:\/\/[^"]+)"/) || [])[1] || '';
+    const desc   = stripHtml(get('description')).slice(0, 300);
+    const date   = get('pubDate') || get('dc:date') || get('published') || '';
+    const source = stripHtml(get('dc:creator') || get('author') || '').trim() || feedSource;
+    if (title && title.length > 8 && link && !link.includes('news.google.com')) {
       items.push({ title, desc, link, date, source });
     }
   }
@@ -98,12 +127,15 @@ function parseRSS(xml) {
 
 async function fetchRSS(feed) {
   try {
-    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' } });
+    const res = await fetch(feed.url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' },
+      signal: AbortSignal.timeout(8000),
+    });
     if (!res.ok) return [];
     const xml = await res.text();
-    return parseRSS(xml).map(item => ({
+    return parseRSS(xml, feed.source).map(item => ({
       title:   item.title,
-      summary: item.desc || '',
+      summary: item.desc,
       region:  categRegion(item.title, item.desc, feed.region),
       sector:  categSector(item.title, item.desc) || feed.sector,
       source:  item.source,
@@ -140,7 +172,7 @@ async function fetchOpenAI(apiKey, regionPrompt) {
       title:   a.title || '',
       summary: a.summary || '',
       region:  categRegion(a.title, a.summary, regionPrompt.region),
-      sector:  ['motor','aerospace','recycling','materials'].includes(a.sector) ? a.sector : categSector(a.title, a.summary),
+      sector:  ['motor','aerospace','recycling','materials','construction'].includes(a.sector) ? a.sector : categSector(a.title, a.summary),
       source:  a.source || 'OpenAI Search',
       url:     a.url || '',
       date:    a.date ? new Date(a.date).toISOString() : new Date().toISOString(),
@@ -158,11 +190,8 @@ module.exports = async function handler(req, res) {
     ]);
 
     let articles = [...rssResults.flat(), ...aiResults.flat()];
-
-    // Remove items with no URL or very short titles
     articles = articles.filter(a => a.url && a.title && a.title.length > 10);
 
-    // Deduplicate by normalised title
     const seen = new Set();
     articles = articles.filter(a => {
       const key = a.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 55);
@@ -171,7 +200,7 @@ module.exports = async function handler(req, res) {
     });
 
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-    articles = articles.slice(0, 100);
+    articles = articles.slice(0, 120);
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
