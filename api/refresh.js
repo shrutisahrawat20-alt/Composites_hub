@@ -122,12 +122,11 @@ function parseRSS(xml, feedSource) {
       || (b.match(/<link[^>]*>(https?:\/\/[^<]+)<\/link>/) || [])[1]
       || '';
     if (!foundLink || foundLink.includes('news.google.com')) continue;
-    // Strip tracking/filter params (JEC appends them directly to the URL path)
+    // Clean URL: strip ? query strings AND JEC-style run-on params (no ? separator)
     const link = foundLink
-      .replace(/[?&]news_type.*$/i, '').replace(/[?&]end_use.*$/i, '')
-      .replace(/[?&]tax_product.*$/i, '').replace(/[?&]exceptional.*$/i, '')
-      .replace(/news_type=.*$/i, '').replace(/end_use_application=.*$/i, '')
-      .replace(/[?#].*$/, '').replace(/\/+$/, '');
+      .replace(/[?#].*$/, '')
+      .replace(/\/?(news_type|end_use_application|tax_product|exceptionaltags)=.*$/i, '')
+      .replace(/\/+$/, '');
     const desc   = stripHtml(get('description') || get('content') || get('summary')).slice(0, 300);
     const date   = get('pubDate') || get('dc:date') || get('published') || get('updated') || '';
     const source = stripHtml(get('dc:creator') || get('author') || '').trim() || feedSource;
@@ -248,7 +247,10 @@ module.exports = async function handler(req, res) {
     const seenSlugs  = new Set();
     const seenTitles = new Set();
     articles = articles.filter(a => {
-      const cleanUrl  = (a.url || '').replace(/[?#].*$/, '').replace(/\/+$/, '').toLowerCase().trim();
+      const cleanUrl  = (a.url || '')
+        .replace(/[?#].*$/, '')
+        .replace(/\/?(news_type|end_use_application|tax_product|exceptionaltags)=.*$/i, '')
+        .replace(/\/+$/, '').toLowerCase().trim();
       const parts     = cleanUrl.split('/').filter(Boolean);
       const slug      = parts[parts.length - 1] || cleanUrl;
       const normTitle = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
