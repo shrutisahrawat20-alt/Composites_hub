@@ -1,6 +1,5 @@
 // HRC Composites Hub — api/refresh.js
-// Dual source: Google News RSS (always runs) + OpenAI web search (if OPENAI_API_KEY is set)
-// Results are merged, deduplicated and returned as one unified feed.
+// Dual source: Google News RSS + OpenAI web search (if OPENAI_API_KEY is set)
 
 const RSS_FEEDS = [
   // EU
@@ -26,22 +25,10 @@ const RSS_FEEDS = [
 ];
 
 const AI_PROMPTS = [
-  {
-    region: 'eu',
-    prompt: 'Search for the latest composites industry news from Europe (EU, UK, Germany, France, Italy) published in the last 7 days. Cover: motor vehicles (CFRP cars, motorsport), aerospace (Airbus, DAHER, drones), recycling (bio-composites, end-of-life), materials (JEC awards, manufacturing). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
-  },
-  {
-    region: 'china',
-    prompt: 'Search for the latest composites industry news from China published in the last 7 days. Cover: motor vehicles (EV supercars, flying cars), aerospace (eVTOL, UAV), recycling (wind turbine blades), materials (Zhongfu Shenying, Jinggong, CFRP precursor). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
-  },
-  {
-    region: 'usa',
-    prompt: 'Search for the latest composites industry news from USA and North America published in the last 7 days. Cover: motor vehicles (CFRP vehicles, lightweighting), aerospace (Boeing, Joby, NASA, eVTOL), recycling (carbon fiber recycling), materials (Hexcel, Cytec, new composites). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
-  },
-  {
-    region: 'global',
-    prompt: 'Search for the latest global composites industry news published in the last 7 days. Focus on key players (Toray, Hexcel, Solvay, Teijin, SGL Carbon), market trends, M&A activity, JEC/CompositesWorld coverage, wind energy composites, major innovation awards. Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
-  },
+  { region: 'eu',     prompt: 'Search for the latest composites industry news from Europe (EU, UK, Germany, France, Italy) published in the last 7 days. Cover motor vehicles (CFRP cars, motorsport), aerospace (Airbus, DAHER, drones), recycling (bio-composites, end-of-life), materials (JEC awards, manufacturing). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
+  { region: 'china',  prompt: 'Search for the latest composites industry news from China published in the last 7 days. Cover motor vehicles (EV supercars, flying cars), aerospace (eVTOL, UAV), recycling (wind turbine blades), materials (Zhongfu Shenying, Jinggong, CFRP precursor). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
+  { region: 'usa',    prompt: 'Search for the latest composites industry news from USA and North America published in the last 7 days. Cover motor vehicles (CFRP vehicles, lightweighting), aerospace (Boeing, Joby, NASA, eVTOL), recycling (carbon fiber recycling), materials (Hexcel, Cytec, new composites). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
+  { region: 'global', prompt: 'Search for the latest global composites industry news published in the last 7 days. Focus on key players (Toray, Hexcel, Solvay, Teijin, SGL Carbon), market trends, M&A, JEC/CompositesWorld coverage, wind energy composites, major innovation awards. Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
 ];
 
 const SECTOR_RULES = [
@@ -67,6 +54,28 @@ function categRegion(title, desc, fallback) {
   return fallback;
 }
 
+function cleanText(str) {
+  return (str || '')
+    .replace(/<a\s[^>]*>[\s\S]*?<\/a>/gi, '')  // remove full <a> tags with content
+    .replace(/<[^>]+>/g, ' ')                    // strip remaining html tags
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#?\w+;/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractGoogleUrl(block) {
+  // Google News RSS wraps real URLs inside <a href="..."> in the description
+  const m = block.match(/href="(https?:\/\/(?!news\.google\.com)[^"]+)"/);
+  if (m) return m[1];
+  // Fall back to <link> tag — may be a google.com redirect, still usable
+  const link = block.match(/<link>([^<]+)/);
+  return link ? link[1].trim() : '';
+}
+
 function parseRSS(xml) {
   const items = [];
   const rx = /<item[^>]*>([\s\S]*?)<\/item>/gi;
@@ -75,16 +84,25 @@ function parseRSS(xml) {
     const b = m[1];
     const get = tag => {
       const r = b.match(new RegExp('<' + tag + '(?:[^>]*)>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/' + tag + '>', 'i'));
-      return r ? r[1].trim() : '';
+      return r ? r[1] : '';
     };
-    const raw  = get('title').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#?\w+;/g,'').trim();
-    const link = get('link') || (b.match(/<link>([^<]+)/) || [])[1] || '';
-    const desc = get('description').replace(/<[^>]+>/g,' ').replace(/&[a-z]+;/gi,' ').replace(/\s+/g,' ').trim().slice(0,300);
+
+    // Title — strip " - Source" suffix Google appends
+    const rawTitle = cleanText(get('title'));
+    const srcMatch = rawTitle.match(/ - ([^-]{3,60})$/);
+    const title  = srcMatch ? rawTitle.replace(/ - [^-]+$/, '').trim() : rawTitle;
+    const source = srcMatch ? srcMatch[1].trim() : 'Google News';
+
+    // URL — prefer real article URL extracted from description href
+    const url = extractGoogleUrl(b);
+
+    // Description — strip all HTML including the <a href> links Google injects
+    const rawDesc = get('description');
+    const desc = cleanText(rawDesc).slice(0, 300);
+
     const date = get('pubDate') || get('dc:date') || '';
-    const sm   = raw.match(/ - ([^-]{3,50})$/);
-    const title = sm ? raw.replace(/ - [^-]+$/, '').trim() : raw;
-    const src   = sm ? sm[1].trim() : 'Google News';
-    if (title && link) items.push({ title, desc, link, date, src });
+
+    if (title && url) items.push({ title, desc, url, date, source });
   }
   return items;
 }
@@ -99,8 +117,8 @@ async function fetchRSS(feed) {
       summary: item.desc,
       region:  categRegion(item.title, item.desc, feed.region),
       sector:  categSector(item.title, item.desc) || feed.sector,
-      source:  item.src,
-      url:     item.link,
+      source:  item.source,
+      url:     item.url,
       date:    item.date ? new Date(item.date).toISOString() : new Date().toISOString(),
       via:     'rss',
     }));
@@ -111,10 +129,7 @@ async function fetchOpenAI(apiKey, regionPrompt) {
   try {
     const res = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + apiKey,
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         tools: [{ type: 'web_search_preview' }],
@@ -132,8 +147,7 @@ async function fetchOpenAI(apiKey, regionPrompt) {
     const clean = text.replace(/```json|```/g, '').trim();
     const match = clean.match(/\[[\s\S]*\]/);
     if (!match) return [];
-    const articles = JSON.parse(match[0]);
-    return articles.map(a => ({
+    return JSON.parse(match[0]).map(a => ({
       title:   a.title || '',
       summary: a.summary || '',
       region:  categRegion(a.title, a.summary, regionPrompt.region),
@@ -157,6 +171,9 @@ module.exports = async function handler(req, res) {
 
     let articles = [...rssResults.flat(), ...aiResults.flat()];
 
+    // Remove articles with no URL or very short titles
+    articles = articles.filter(a => a.url && a.title && a.title.length > 10);
+
     // Deduplicate by normalised title
     const seen = new Set();
     articles = articles.filter(a => {
@@ -175,10 +192,7 @@ module.exports = async function handler(req, res) {
       articles,
       fetchedAt: new Date().toISOString(),
       count: articles.length,
-      sources: {
-        rss: rssResults.flat().length,
-        ai:  aiResults.flat().length,
-      },
+      sources: { rss: rssResults.flat().length, ai: aiResults.flat().length },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
