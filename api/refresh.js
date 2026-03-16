@@ -240,24 +240,22 @@ module.exports = async function handler(req, res) {
     }
 
     articles = articles.filter(a => isCompositeRelevant(a.title, a.summary));
-    // ─────────────────────────────────────────────────────────────────────────
+
+    const beforeDedup = articles.length;
 
     // Deduplicate — three independent checks, any match = duplicate
     const seenUrls   = new Set();
     const seenSlugs  = new Set();
     const seenTitles = new Set();
     articles = articles.filter(a => {
-      // Full cleaned URL (most reliable — catches exact same URL from two feeds)
-      const cleanUrl  = (a.url || '').replace(/[?#].*$/, '').replace(/\/+$/, '').toLowerCase();
-      // Last path segment (catches same article URL from different domains republishing)
+      const cleanUrl  = (a.url || '').replace(/[?#].*$/, '').replace(/\/+$/, '').toLowerCase().trim();
       const parts     = cleanUrl.split('/').filter(Boolean);
       const slug      = parts[parts.length - 1] || cleanUrl;
-      // Normalised title (catches same story with slightly different titles)
       const normTitle = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
 
-      if (cleanUrl  && seenUrls.has(cleanUrl))         return false;
-      if (slug.length > 8  && seenSlugs.has(slug))     return false;
-      if (seenTitles.has(normTitle))                   return false;
+      if (cleanUrl && seenUrls.has(cleanUrl))       return false;
+      if (slug.length > 8 && seenSlugs.has(slug))   return false;
+      if (seenTitles.has(normTitle))                 return false;
 
       if (cleanUrl)        seenUrls.add(cleanUrl);
       if (slug.length > 8) seenSlugs.add(slug);
@@ -265,11 +263,13 @@ module.exports = async function handler(req, res) {
       return true;
     });
 
+    console.log(`[HRC] Before dedup: ${beforeDedup}, after dedup: ${articles.length}, removed: ${beforeDedup - articles.length}`);
+
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     articles = articles.slice(0, 120);
 
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
+    res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(200).json({
       articles,
