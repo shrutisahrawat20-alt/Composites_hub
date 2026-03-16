@@ -73,7 +73,6 @@ function parseRSS(xml) {
     const link  = get('link') || (b.match(/<link>([^<]+)/) || [])[1] || '';
     const desc  = get('description').replace(/<[^>]+>/g,' ').replace(/&[a-z]+;/gi,' ').replace(/\s+/g,' ').trim().slice(0, 280);
     const date  = get('pubDate') || get('dc:date') || '';
-    // Google News wraps the real URL — extract source name from title if present
     const srcMatch = title.match(/ - ([^-]+)$/);
     const cleanTitle = srcMatch ? title.replace(/ - [^-]+$/, '').trim() : title;
     const source = srcMatch ? srcMatch[1].trim() : '';
@@ -108,7 +107,6 @@ module.exports = async function handler(req, res) {
     const results = await Promise.all(FEEDS.map(fetchFeed));
     let articles  = results.flat();
 
-    // Deduplicate by title
     const seen = new Set();
     articles = articles.filter(a => {
       const key = a.title.toLowerCase().slice(0, 60);
@@ -116,7 +114,6 @@ module.exports = async function handler(req, res) {
       seen.add(key); return true;
     });
 
-    // Sort newest first, cap at 60
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     articles = articles.slice(0, 60);
 
