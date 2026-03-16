@@ -242,31 +242,28 @@ module.exports = async function handler(req, res) {
     articles = articles.filter(a => isCompositeRelevant(a.title, a.summary));
     // ─────────────────────────────────────────────────────────────────────────
 
-    // Deduplicate by URL, slug and title — catches same article from multiple feeds
+    // Deduplicate — three independent checks, any match = duplicate
     const seenUrls   = new Set();
     const seenSlugs  = new Set();
     const seenTitles = new Set();
     articles = articles.filter(a => {
-      // Strip query string — handle both ?param and run-on params (no ?)
-      // JEC URLs look like: /article/?news_type=... or /article/news_type=...
-      const cleanUrl  = (a.url || '')
-        .replace(/[?&]news_type.*$/i, '')   // strip JEC-style run-on params
-        .replace(/[?&]end_use.*$/i, '')
-        .replace(/[?&]tax_product.*$/i, '')
-        .replace(/[?&]exceptional.*$/i, '')
-        .replace(/[?#].*$/, '')             // strip anything after ? or #
-        .replace(/\/+$/, '')                // strip trailing slashes
-        .toLowerCase();
-      const slug      = cleanUrl.replace(/^https?:\/\/[^\/]+/, '');
+      // Full cleaned URL (most reliable — catches exact same URL from two feeds)
+      const cleanUrl  = (a.url || '').replace(/[?#].*$/, '').replace(/\/+$/, '').toLowerCase();
+      // Last path segment (catches same article URL from different domains republishing)
+      const parts     = cleanUrl.split('/').filter(Boolean);
+      const slug      = parts[parts.length - 1] || cleanUrl;
+      // Normalised title (catches same story with slightly different titles)
       const normTitle = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
-      if (cleanUrl && seenUrls.has(cleanUrl))          return false;
-      if (slug.length > 10 && seenSlugs.has(slug))    return false;
+
+      if (cleanUrl  && seenUrls.has(cleanUrl))         return false;
+      if (slug.length > 8  && seenSlugs.has(slug))     return false;
       if (seenTitles.has(normTitle))                   return false;
-      if (cleanUrl) seenUrls.add(cleanUrl);
-      if (slug.length > 10) seenSlugs.add(slug);
+
+      if (cleanUrl)        seenUrls.add(cleanUrl);
+      if (slug.length > 8) seenSlugs.add(slug);
       seenTitles.add(normTitle);
       return true;
-    });;
+    });
 
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     articles = articles.slice(0, 120);
