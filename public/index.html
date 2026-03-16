@@ -157,24 +157,23 @@
     /* Card — list row default */
     .card {
       background: var(--white); border-bottom: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 3px 1fr;
+      display: flex; flex-direction: row; align-items: stretch;
       transition: background .12s; text-decoration: none; color: inherit; padding: 0;
     }
     .card:last-child { border-bottom: none; }
     .card:hover { background: var(--light); }
-    .card-accent { width: 3px; }
-    .card-body { padding: .75rem 1rem; display: grid; grid-template-rows: auto 1fr auto; min-width: 0; gap: 3px; }
+    .card-accent { width: 3px; flex-shrink: 0; }
+    .card-body { flex: 1; padding: .75rem 1rem; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 
     /* Card — grid style */
     .grid-view .card {
-      flex-direction: column; border-bottom: none;
+      display: flex; flex-direction: column; border-bottom: none;
       border: 1px solid var(--border); border-radius: var(--radius-lg);
       border-top: 3px solid transparent;
     }
     .grid-view .card:hover { box-shadow: 0 4px 16px rgba(10,31,68,0.08); background: var(--white); }
     .grid-view .card-accent { display: none; }
-    .grid-view .card-body { padding: 1rem; min-height: 100px; }
+    .grid-view .card-body { padding: 1rem; flex: 1; }
     .grid-view .card.sector-motor        { border-top-color: #383737; }
     .grid-view .card.sector-aerospace    { border-top-color: #1E6EB5; }
     .grid-view .card.sector-recycling    { border-top-color: #1B7A4A; }
