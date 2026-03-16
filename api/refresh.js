@@ -105,7 +105,7 @@ function stripHtml(str) {
 
 function parseRSS(xml, feedSource) {
   const items = [];
-  const rx = /<item[^>]*>([\s\S]*?)<\/item>/gi;
+  const rx = /<(?:item|entry)[^>]*>([\s\S]*?)<\/(?:item|entry)>/gi;
   let m;
   while ((m = rx.exec(xml)) !== null) {
     const b = m[1];
@@ -113,14 +113,25 @@ function parseRSS(xml, feedSource) {
       const r = b.match(new RegExp('<' + tag + '(?:[^>]*)>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/' + tag + '>', 'i'));
       return r ? r[1] : '';
     };
-    const title  = stripHtml(get('title')).trim();
-    const link   = stripHtml(get('link')).trim() || (b.match(/href="(https?:\/\/[^"]+)"/) || [])[1] || '';
-    const desc   = stripHtml(get('description')).slice(0, 300);
-    const date   = get('pubDate') || get('dc:date') || get('published') || '';
+    const title = stripHtml(get('title')).trim();
+    if (!title || title.length < 8) continue;
+    const rawLink = stripHtml(get('link')).trim();
+    const foundLink = rawLink.startsWith('http')
+      ? rawLink
+      : (b.match(/href="(https?:\/\/[^"]+)"/) || [])[1]
+      || (b.match(/<link[^>]*>(https?:\/\/[^<]+)<\/link>/) || [])[1]
+      || '';
+    if (!foundLink || foundLink.includes('news.google.com')) continue;
+    // Strip tracking/filter params (JEC appends them directly to the URL path)
+    const link = foundLink
+      .replace(/[?&]news_type.*$/i, '').replace(/[?&]end_use.*$/i, '')
+      .replace(/[?&]tax_product.*$/i, '').replace(/[?&]exceptional.*$/i, '')
+      .replace(/news_type=.*$/i, '').replace(/end_use_application=.*$/i, '')
+      .replace(/[?#].*$/, '').replace(/\/+$/, '');
+    const desc   = stripHtml(get('description') || get('content') || get('summary')).slice(0, 300);
+    const date   = get('pubDate') || get('dc:date') || get('published') || get('updated') || '';
     const source = stripHtml(get('dc:creator') || get('author') || '').trim() || feedSource;
-    if (title && title.length > 8 && link && !link.includes('news.google.com')) {
-      items.push({ title, desc, link, date, source });
-    }
+    items.push({ title, desc, link, date, source });
   }
   return items;
 }
@@ -231,19 +242,31 @@ module.exports = async function handler(req, res) {
     articles = articles.filter(a => isCompositeRelevant(a.title, a.summary));
     // ─────────────────────────────────────────────────────────────────────────
 
-    // Deduplicate by URL *and* by normalised title
-    // This catches the same story appearing from multiple feeds with slightly different titles
+    // Deduplicate by URL, slug and title — catches same article from multiple feeds
     const seenUrls   = new Set();
+    const seenSlugs  = new Set();
     const seenTitles = new Set();
     articles = articles.filter(a => {
-      const normUrl   = (a.url || '').split('?')[0].replace(/\/+$/, '').toLowerCase();
+      // Strip query string — handle both ?param and run-on params (no ?)
+      // JEC URLs look like: /article/?news_type=... or /article/news_type=...
+      const cleanUrl  = (a.url || '')
+        .replace(/[?&]news_type.*$/i, '')   // strip JEC-style run-on params
+        .replace(/[?&]end_use.*$/i, '')
+        .replace(/[?&]tax_product.*$/i, '')
+        .replace(/[?&]exceptional.*$/i, '')
+        .replace(/[?#].*$/, '')             // strip anything after ? or #
+        .replace(/\/+$/, '')                // strip trailing slashes
+        .toLowerCase();
+      const slug      = cleanUrl.replace(/^https?:\/\/[^\/]+/, '');
       const normTitle = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
-      if (normUrl && seenUrls.has(normUrl))   return false;
-      if (seenTitles.has(normTitle))          return false;
-      if (normUrl) seenUrls.add(normUrl);
+      if (cleanUrl && seenUrls.has(cleanUrl))          return false;
+      if (slug.length > 10 && seenSlugs.has(slug))    return false;
+      if (seenTitles.has(normTitle))                   return false;
+      if (cleanUrl) seenUrls.add(cleanUrl);
+      if (slug.length > 10) seenSlugs.add(slug);
       seenTitles.add(normTitle);
       return true;
-    });
+    });;
 
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     articles = articles.slice(0, 120);
