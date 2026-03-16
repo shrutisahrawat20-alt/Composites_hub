@@ -157,13 +157,14 @@
     /* Card — list row default */
     .card {
       background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; flex-direction: row; align-items: stretch;
+      display: grid;
+      grid-template-columns: 3px 1fr;
       transition: background .12s; text-decoration: none; color: inherit; padding: 0;
     }
     .card:last-child { border-bottom: none; }
     .card:hover { background: var(--light); }
-    .card-accent { width: 3px; flex-shrink: 0; }
-    .card-body { flex: 1; padding: .8rem 1rem; display: flex; flex-direction: column; min-width: 0; }
+    .card-accent { width: 3px; }
+    .card-body { padding: .75rem 1rem; display: grid; grid-template-rows: auto 1fr auto; min-width: 0; gap: 3px; }
 
     /* Card — grid style */
     .grid-view .card {
@@ -199,16 +200,18 @@
     .bdg-materials    { background: #FDEAED; color: #C8102E; }
     .bdg-construction { background: #F0ECF9; color: #5A3E8A; }
 
-    .card-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
-    .badge { font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; }
-    .ago { font-size: 10px; color: var(--muted); margin-left: auto; white-space: nowrap; }
-    .card-title { font-size: 13px; font-weight: 600; line-height: 1.45; color: var(--text); margin-bottom: 4px; }
-    .card-summary { font-size: 12px; color: var(--muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
-    .card-summary:empty { display: none; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 2px; }
-    .card-src { font-size: 10px; color: var(--muted); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 65%; }
-    .card-link { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--red); text-decoration: none; white-space: nowrap; }
+    .card-body { padding: .7rem 1rem; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .card-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: nowrap; }
+    .badge { font-size: 9px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; line-height: 1.6; }
+    .ago { font-size: 10px; color: var(--muted); white-space: nowrap; flex-shrink: 0; margin-left: auto; }
+    .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.4; color: var(--text); }
+    .card-summary { font-size: 12px; color: var(--muted); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-summary:empty, .card-summary-empty { display: none; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 2px; border-top: 1px solid var(--border); margin-top: 4px; }
+    .card-src { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%; }
+    .card-link { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--red); text-decoration: none; white-space: nowrap; flex-shrink: 0; }
     .card-link:hover { opacity: .7; }
+    .card-meta { display: none; }
 
     /* ── STATES ── */
     .state-box { text-align: center; padding: 5rem 1rem; }
@@ -403,12 +406,12 @@
       <a class="card sector-${a.sector}" href="${a.url||'#'}" target="${a.url?'_blank':'_self'}" rel="noopener">
         <div class="card-accent"></div>
         <div class="card-body">
-          <div class="card-meta">
+          <div class="card-top">
             <span class="badge ${sm.bdg}">${sm.label}</span>
             <span class="ago">${ago(a.date)}</span>
           </div>
           <div class="card-title">${a.title}</div>
-          ${summary ? `<div class="card-summary">${summary}</div>` : '<div class="card-summary-empty"></div>'}
+          ${summary ? `<div class="card-summary">${summary}</div>` : ''}
           <div class="card-footer">
             <span class="card-src">${a.source||''}</span>
             ${a.url ? `<a class="card-link" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read ↗</a>` : ''}
