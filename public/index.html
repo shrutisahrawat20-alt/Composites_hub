@@ -16,12 +16,15 @@
       --red:#e30613;
       --charcoal:#383737;
       --light:#f1f1f2;
+      --green:#1b7a4a;
+      --blue:#1e6eb5;
+      --purple:#7b5ea7;
       --radius-sm:10px;
       --radius-md:14px;
       --radius-lg:18px;
       --shadow-sm:0 2px 10px rgba(0,0,0,.04);
       --shadow-md:0 8px 24px rgba(0,0,0,.08);
-      --max:1280px;
+      --max:1320px;
     }
 
     * { box-sizing:border-box; }
@@ -40,6 +43,8 @@
       width:min(var(--max), calc(100% - 32px));
       margin:0 auto;
     }
+
+    .hidden { display:none !important; }
 
     /* Top bar */
     .topbar{
@@ -176,10 +181,72 @@
       color:#cfcfd2;
     }
 
+    /* Insights dashboard */
+    .dash{
+      width:min(var(--max), calc(100% - 32px));
+      margin:18px auto 0;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr .9fr .9fr;
+      gap:14px;
+    }
+    .dash-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--radius-md);
+      padding:14px 16px;
+      box-shadow:var(--shadow-sm);
+      min-width:0;
+    }
+    .dash-title{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:#7b7b81;
+      margin-bottom:10px;
+    }
+    .dash-value{
+      font-size:28px;
+      font-weight:800;
+      line-height:1;
+      color:#1f1f22;
+    }
+    .dash-sub{
+      margin-top:8px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    .mini-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .mini-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      font-size:13px;
+      color:#2f2f33;
+      min-width:0;
+    }
+    .mini-item .label{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .mini-item .count{
+      color:#8a8a90;
+      font-weight:700;
+      flex-shrink:0;
+    }
+
     /* Region nav */
     .region-nav{
       background:#ececed;
       border-bottom:1px solid var(--line);
+      margin-top:18px;
     }
     .region-nav-inner{
       width:min(var(--max), calc(100% - 32px));
@@ -221,7 +288,7 @@
       width:min(var(--max), calc(100% - 32px));
       margin:14px auto 0;
       display:grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: 1fr auto auto auto auto;
       gap:12px;
       align-items:center;
     }
@@ -288,6 +355,23 @@
       min-width:120px;
     }
 
+    .toggle{
+      height:40px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      padding:0 12px;
+      color:#555;
+      min-width:120px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .toggle.active{
+      border-color:var(--charcoal);
+      background:var(--charcoal);
+      color:#fff;
+    }
+
     .view-tgl{
       display:flex;
       align-items:center;
@@ -321,6 +405,7 @@
       justify-content:space-between;
       gap:12px;
       margin-bottom:18px;
+      flex-wrap:wrap;
     }
     .meta-title{
       display:flex;
@@ -361,6 +446,7 @@
       justify-content:space-between;
       gap:12px;
       margin-bottom:14px;
+      flex-wrap:wrap;
     }
     .region-title{
       display:flex;
@@ -411,19 +497,19 @@
     }
     .cards-grid.grid-view{
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns:repeat(auto-fill, minmax(370px, 1fr));
       gap:14px;
     }
 
     .card{
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:12px;
       background:#fff;
       border:1px solid var(--line);
       border-left:4px solid #383737;
       border-radius:var(--radius-md);
-      padding:14px 16px;
+      padding:15px 16px;
       min-width:0;
       box-shadow:var(--shadow-sm);
       transition:transform .12s ease, box-shadow .15s ease, background .12s ease;
@@ -443,16 +529,25 @@
     .card-body{
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:10px;
       min-width:0;
       flex:1;
     }
-    .card-top,
-    .card-footer{
+
+    .card-top{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .badge-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      min-width:0;
     }
 
     .badge{
@@ -474,17 +569,51 @@
     .bdg-materials{ background:#f9e7ea; color:#C8102E; }
     .bdg-construction{ background:#eee9f9; color:#7B5EA7; }
 
+    .rel{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 9px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.07em;
+      text-transform:uppercase;
+      line-height:1.3;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .rel-high{ background:#e4f4ec; color:#1b7a4a; }
+    .rel-medium{ background:#fff3dc; color:#9b6a00; }
+    .rel-low{ background:#f0f1f3; color:#6f6f73; }
+
+    .sig{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 9px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      line-height:1.3;
+      white-space:nowrap;
+      flex-shrink:0;
+      background:#f0f1f3;
+      color:#555;
+    }
+
     .ago{
       margin-left:auto;
       font-size:11px;
       color:#7b7b81;
       white-space:nowrap;
+      flex-shrink:0;
     }
 
     .card-title{
-      font-size:17px;
-      font-weight:750;
-      line-height:1.32;
+      font-size:18px;
+      font-weight:780;
+      line-height:1.3;
       color:#222;
       letter-spacing:-.01em;
     }
@@ -493,15 +622,48 @@
       font-size:14px;
       color:#666870;
       line-height:1.58;
-      display:-webkit-box;
-      -webkit-box-orient:vertical;
-      -webkit-line-clamp:3;
-      overflow:hidden;
+    }
+
+    .info-block{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      border-top:1px solid var(--line-2);
+      padding-top:10px;
+    }
+
+    .info-line{
+      font-size:13px;
+      color:#4b4d53;
+      line-height:1.55;
+    }
+    .info-line strong{
+      color:#232323;
+    }
+
+    .chips{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      background:#f1f2f4;
+      color:#51545c;
+      font-size:11px;
+      font-weight:700;
     }
 
     .card-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
       border-top:1px solid var(--line-2);
-      padding-top:8px;
+      padding-top:10px;
       margin-top:auto;
     }
 
@@ -524,12 +686,6 @@
       flex-shrink:0;
     }
     .card-link:hover{ opacity:.72; }
-
-    .empty-note{
-      color:#8a8a90;
-      font-size:13px;
-      padding:8px 0 2px;
-    }
 
     /* Footer */
     footer{
@@ -568,6 +724,18 @@
     }
     .footer-links a:hover{ opacity:1; }
 
+    @media (max-width: 1120px){
+      .dash{
+        grid-template-columns:1fr 1fr;
+      }
+      .controls{
+        grid-template-columns:1fr 1fr;
+      }
+      .search-wrap{
+        order:3;
+      }
+    }
+
     @media (max-width: 980px){
       .hero-inner{
         grid-template-columns:1fr;
@@ -580,10 +748,20 @@
       }
       .search-wrap,
       .sort-sel,
-      .view-tgl{
+      .view-tgl,
+      .toggle{
         width:100%;
       }
       .view-tgl{ justify-content:flex-end; }
+    }
+
+    @media (max-width: 720px){
+      .dash{
+        grid-template-columns:1fr;
+      }
+      .cards-grid.grid-view{
+        grid-template-columns:1fr;
+      }
     }
 
     @media (max-width: 640px){
@@ -593,7 +771,8 @@
       .region-nav-inner,
       .controls,
       .main,
-      .footer-inner{
+      .footer-inner,
+      .dash{
         width:min(var(--max), calc(100% - 20px));
       }
       .hero h1{ font-size:38px; }
@@ -610,7 +789,6 @@
 </head>
 <body>
 
-  <!-- TOP BAR -->
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">
@@ -634,7 +812,6 @@
     </div>
   </header>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-inner">
       <div>
@@ -652,8 +829,8 @@
           <div class="stat-lbl">Articles</div>
         </div>
         <div class="stat">
-          <div class="stat-num">4</div>
-          <div class="stat-lbl">Regions</div>
+          <div class="stat-num" id="stat-high">0</div>
+          <div class="stat-lbl">High Relevance</div>
         </div>
         <div class="stat">
           <div class="stat-num">24h</div>
@@ -663,7 +840,33 @@
     </div>
   </section>
 
-  <!-- REGION TABS -->
+  <section class="dash" id="dash">
+    <div class="dash-card">
+      <div class="dash-title">Top companies</div>
+      <div class="mini-list" id="top-companies">
+        <div class="mini-item"><span class="label">—</span><span class="count">0</span></div>
+      </div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-title">Signals</div>
+      <div class="mini-list" id="top-signals">
+        <div class="mini-item"><span class="label">—</span><span class="count">0</span></div>
+      </div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-title">Regions</div>
+      <div class="mini-list" id="top-regions">
+        <div class="mini-item"><span class="label">—</span><span class="count">0</span></div>
+      </div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-title">Sectors</div>
+      <div class="mini-list" id="top-sectors">
+        <div class="mini-item"><span class="label">—</span><span class="count">0</span></div>
+      </div>
+    </div>
+  </section>
+
   <nav class="region-nav">
     <div class="region-nav-inner" id="region-tabs">
       <button class="rtab active" data-region="all"><span>🌐</span>All Regions</button>
@@ -674,7 +877,6 @@
     </div>
   </nav>
 
-  <!-- CONTROLS -->
   <div class="controls">
     <div class="sector-tabs" id="sector-tabs">
       <button class="stab active" data-sector="all">All Sectors</button>
@@ -682,18 +884,23 @@
       <button class="stab" data-sector="aerospace">Aerospace</button>
       <button class="stab" data-sector="recycling">Recycling</button>
       <button class="stab" data-sector="materials">Materials &amp; Others</button>
+      <button class="stab" data-sector="construction">Construction</button>
     </div>
 
     <div class="search-wrap">
       <span class="search-ico">⌕</span>
-      <input class="search-input" id="search" type="text" placeholder="Search articles..." oninput="render()" />
+      <input class="search-input" id="search" type="text" placeholder="Search articles, companies, keywords..." oninput="render()" />
     </div>
 
     <select class="sort-sel" id="sort-sel" onchange="render()">
+      <option value="relevance">Highest relevance</option>
       <option value="latest">Latest first</option>
       <option value="region">By region</option>
       <option value="sector">By sector</option>
+      <option value="signal">By signal</option>
     </select>
+
+    <button class="toggle" id="high-only-btn" onclick="toggleHighOnly()">High only: Off</button>
 
     <div class="view-tgl">
       <button class="view-btn" id="btn-grid" title="Grid" onclick="setView('grid')">▦</button>
@@ -701,7 +908,6 @@
     </div>
   </div>
 
-  <!-- MAIN -->
   <main class="main" id="main">
     <div class="state-box">
       <div class="spinner"></div>
@@ -745,10 +951,25 @@
       construction: { label:'Construction', cls:'sector-construction', pip:'pip-construction', bdg:'bdg-construction' }
     };
 
+    const SIGNAL_LABELS = {
+      capacity_expansion: 'Capacity',
+      partnership: 'Partnership',
+      new_product: 'New Product',
+      recycling: 'Recycling',
+      oem_adoption: 'OEM Adoption',
+      investment: 'Investment',
+      regulation: 'Regulation',
+      market_report: 'Market Report',
+      technology: 'Technology',
+      general: 'General'
+    };
+
     let all = [];
+    let insights = {};
     let activeRegion = 'all';
     let activeSector = 'all';
     let activeView = 'list';
+    let highOnly = false;
 
     document.getElementById('region-tabs').addEventListener('click', e => {
       const b = e.target.closest('[data-region]');
@@ -772,6 +993,14 @@
       activeView = v;
       document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
       document.getElementById('btn-list').classList.toggle('active', v === 'list');
+      render();
+    }
+
+    function toggleHighOnly(){
+      highOnly = !highOnly;
+      const btn = document.getElementById('high-only-btn');
+      btn.classList.toggle('active', highOnly);
+      btn.textContent = `High only: ${highOnly ? 'On' : 'Off'}`;
       render();
     }
 
@@ -810,37 +1039,106 @@
         url: a.url || '',
         date: a.date || new Date().toISOString(),
         region: a.region || 'global',
-        sector: a.sector || 'materials'
+        sector: a.sector || 'materials',
+        companies: Array.isArray(a.companies) ? a.companies : [],
+        signal: a.signal || 'general',
+        hrcRelevance: a.hrcRelevance || 'low',
+        whyItMatters: (a.whyItMatters || '').trim(),
+        implication: (a.implication || '').trim(),
+        keywords: Array.isArray(a.keywords) ? a.keywords : [],
+        via: a.via || 'rss'
       };
+    }
+
+    function relClass(rel){
+      if (rel === 'high') return 'rel-high';
+      if (rel === 'medium') return 'rel-medium';
+      return 'rel-low';
+    }
+
+    function relLabel(rel){
+      if (rel === 'high') return 'High Relevance';
+      if (rel === 'medium') return 'Medium Relevance';
+      return 'Low Relevance';
+    }
+
+    function formatSignal(sig){
+      return SIGNAL_LABELS[sig] || sig.replaceAll('_', ' ');
     }
 
     function cardHTML(a){
       const sm = SECTORS[a.sector] || SECTORS.materials;
       const summary = (a.summary || '').trim();
+      const why = (a.whyItMatters || '').trim();
+      const implication = (a.implication || '').trim();
+      const companies = (a.companies || []).slice(0, 5);
+      const keywords = (a.keywords || []).slice(0, 5);
 
       if (!a.title || a.title.trim().length < 5) return '';
 
       return `
-        <a class="card ${sm.cls}" href="${escapeHtml(a.url || '#')}" target="${a.url ? '_blank' : '_self'}" rel="noopener">
+        <article class="card ${sm.cls}">
           <div class="card-body">
             <div class="card-top">
-              <span class="badge ${sm.bdg}">${escapeHtml(sm.label)}</span>
+              <div class="badge-row">
+                <span class="badge ${sm.bdg}">${escapeHtml(sm.label)}</span>
+                <span class="rel ${relClass(a.hrcRelevance)}">${escapeHtml(relLabel(a.hrcRelevance))}</span>
+                <span class="sig">${escapeHtml(formatSignal(a.signal))}</span>
+              </div>
               <span class="ago">${escapeHtml(ago(a.date))}</span>
             </div>
-            <div class="card-title">${escapeHtml(a.title)}</div>
+
+            <div class="card-title">
+              ${a.url
+                ? `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener">${escapeHtml(a.title)}</a>`
+                : escapeHtml(a.title)
+              }
+            </div>
+
             ${summary ? `<div class="card-summary">${escapeHtml(summary)}</div>` : ''}
+
+            <div class="info-block">
+              ${why ? `<div class="info-line"><strong>Why it matters:</strong> ${escapeHtml(why)}</div>` : ''}
+              ${implication ? `<div class="info-line"><strong>Implication for HRC:</strong> ${escapeHtml(implication)}</div>` : ''}
+              ${companies.length ? `<div class="info-line"><strong>Companies:</strong> ${escapeHtml(companies.join(', '))}</div>` : ''}
+              ${keywords.length ? `
+                <div class="chips">
+                  ${keywords.map(k => `<span class="chip">${escapeHtml(k)}</span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+
             <div class="card-footer">
               <span class="card-src">${escapeHtml(a.source || '')}</span>
-              ${a.url ? `<span class="card-link">Read ↗</span>` : ''}
+              ${a.url ? `<a class="card-link" href="${escapeHtml(a.url)}" target="_blank" rel="noopener">Read ↗</a>` : ''}
             </div>
           </div>
-        </a>
+        </article>
       `;
     }
 
     function sortItems(items, mode){
       const copy = [...items];
-      if (mode === 'latest'){
+      const relScore = { high: 3, medium: 2, low: 1 };
+      const sigOrder = {
+        partnership: 1,
+        capacity_expansion: 2,
+        oem_adoption: 3,
+        investment: 4,
+        technology: 5,
+        recycling: 6,
+        new_product: 7,
+        regulation: 8,
+        general: 9,
+        market_report: 10
+      };
+
+      if (mode === 'relevance'){
+        copy.sort((a,b) =>
+          (relScore[b.hrcRelevance] || 0) - (relScore[a.hrcRelevance] || 0) ||
+          new Date(b.date) - new Date(a.date)
+        );
+      } else if (mode === 'latest'){
         copy.sort((a,b) => new Date(b.date) - new Date(a.date));
       } else if (mode === 'region'){
         const order = { eu:1, china:2, usa:3, global:4 };
@@ -848,6 +1146,8 @@
       } else if (mode === 'sector'){
         const order = { motor:1, aerospace:2, recycling:3, materials:4, construction:5 };
         copy.sort((a,b) => (order[a.sector] || 99) - (order[b.sector] || 99) || (new Date(b.date) - new Date(a.date)));
+      } else if (mode === 'signal'){
+        copy.sort((a,b) => (sigOrder[a.signal] || 99) - (sigOrder[b.signal] || 99) || (new Date(b.date) - new Date(a.date)));
       }
       return copy;
     }
@@ -892,27 +1192,85 @@
       `;
     }
 
+    function topEntries(obj, mapFn = (k) => k, limit = 5){
+      return Object.entries(obj || {})
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([k,v]) => ({ label: mapFn(k), count: v }));
+    }
+
+    function renderMiniList(elId, entries){
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (!entries.length){
+        el.innerHTML = `<div class="mini-item"><span class="label">—</span><span class="count">0</span></div>`;
+        return;
+      }
+      el.innerHTML = entries.map(entry => `
+        <div class="mini-item">
+          <span class="label">${escapeHtml(entry.label)}</span>
+          <span class="count">${entry.count}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderDashboard(filteredItems){
+      document.getElementById('stat-articles').textContent = filteredItems.length;
+      document.getElementById('stat-high').textContent = filteredItems.filter(a => a.hrcRelevance === 'high').length;
+
+      const companyCounts = filteredItems.flatMap(a => a.companies || []).reduce((acc, c) => {
+        acc[c] = (acc[c] || 0) + 1;
+        return acc;
+      }, {});
+
+      const signalCounts = filteredItems.reduce((acc, a) => {
+        acc[a.signal] = (acc[a.signal] || 0) + 1;
+        return acc;
+      }, {});
+
+      const regionCounts = filteredItems.reduce((acc, a) => {
+        acc[a.region] = (acc[a.region] || 0) + 1;
+        return acc;
+      }, {});
+
+      const sectorCounts = filteredItems.reduce((acc, a) => {
+        acc[a.sector] = (acc[a.sector] || 0) + 1;
+        return acc;
+      }, {});
+
+      renderMiniList('top-companies', topEntries(companyCounts, k => k, 5));
+      renderMiniList('top-signals', topEntries(signalCounts, k => formatSignal(k), 5));
+      renderMiniList('top-regions', topEntries(regionCounts, k => REGIONS[k]?.label || k, 4));
+      renderMiniList('top-sectors', topEntries(sectorCounts, k => SECTORS[k]?.label || k, 5));
+    }
+
     function render(){
       const q = document.getElementById('search').value.trim().toLowerCase();
       const sort = document.getElementById('sort-sel').value;
+
       let items = all
         .map(normalizeArticle)
         .filter(a => a.title && a.title.length > 4);
 
       if (activeRegion !== 'all') items = items.filter(a => a.region === activeRegion);
       if (activeSector !== 'all') items = items.filter(a => a.sector === activeSector);
+      if (highOnly) items = items.filter(a => a.hrcRelevance === 'high');
 
       if (q){
         items = items.filter(a =>
           a.title.toLowerCase().includes(q) ||
           (a.summary || '').toLowerCase().includes(q) ||
-          (a.source || '').toLowerCase().includes(q)
+          (a.source || '').toLowerCase().includes(q) ||
+          (a.whyItMatters || '').toLowerCase().includes(q) ||
+          (a.implication || '').toLowerCase().includes(q) ||
+          (a.signal || '').toLowerCase().includes(q) ||
+          (a.companies || []).join(' ').toLowerCase().includes(q) ||
+          (a.keywords || []).join(' ').toLowerCase().includes(q)
         );
       }
 
       items = sortItems(items, sort);
-
-      document.getElementById('stat-articles').textContent = items.length;
+      renderDashboard(items);
 
       const main = document.getElementById('main');
 
@@ -989,6 +1347,7 @@
 
         const data = await res.json();
         all = Array.isArray(data.articles) ? data.articles : [];
+        insights = data.insights || {};
 
         const updated = data.fetchedAt || new Date().toISOString();
         document.getElementById('updated-text').textContent = fmtUpdated(updated);
