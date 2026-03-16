@@ -231,11 +231,18 @@ module.exports = async function handler(req, res) {
     articles = articles.filter(a => isCompositeRelevant(a.title, a.summary));
     // ─────────────────────────────────────────────────────────────────────────
 
-    const seen = new Set();
+    // Deduplicate by URL *and* by normalised title
+    // This catches the same story appearing from multiple feeds with slightly different titles
+    const seenUrls   = new Set();
+    const seenTitles = new Set();
     articles = articles.filter(a => {
-      const key = a.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 55);
-      if (seen.has(key)) return false;
-      seen.add(key); return true;
+      const normUrl   = (a.url || '').split('?')[0].replace(/\/+$/, '').toLowerCase();
+      const normTitle = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
+      if (normUrl && seenUrls.has(normUrl))   return false;
+      if (seenTitles.has(normTitle))          return false;
+      if (normUrl) seenUrls.add(normUrl);
+      seenTitles.add(normTitle);
+      return true;
     });
 
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
