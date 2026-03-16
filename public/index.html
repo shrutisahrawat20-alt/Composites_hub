@@ -12,15 +12,15 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --red:     #C8102E;
-      --navy:    #0A1F44;
-      --navy2:   #132952;
+      --red:     #e30613;
+      --navy:    #383737;
+      --navy2:   #2e2e2e;
       --white:   #ffffff;
-      --off:     #F5F6F8;
-      --border:  #E2E5EB;
+      --off:     #f7f7f7;
+      --border:  #e0e0e0;
       --text:    #1A1F2E;
       --muted:   #6B7280;
-      --light:   #F0F3F8;
+      --light:   #f2f2f2;
       --font:    'Inter', system-ui, sans-serif;
       --font-hd: 'Barlow Condensed', sans-serif;
       --radius:  6px;
@@ -41,15 +41,11 @@
       height: 56px; display: flex; align-items: center; gap: 16px;
     }
     .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo-box {
-      background: var(--red); color: #fff;
-      font-family: var(--font-hd); font-size: 18px; font-weight: 700;
-      letter-spacing: .04em; padding: 3px 9px; border-radius: 3px;
-    }
+    .logo-box { display: none; }
     .logo-title {
       font-family: var(--font-hd); font-size: 13px; font-weight: 600;
       letter-spacing: .06em; text-transform: uppercase;
-      color: rgba(255,255,255,0.75); line-height: 1.2;
+      color: rgba(255,255,255,0.90); line-height: 1.2; font-size: 14px; letter-spacing: .03em;
     }
     .logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: .04em; }
     .topbar-gap { flex: 1; }
@@ -64,13 +60,13 @@
 
     /* ── HERO BANNER ── */
     .hero {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy) 100%);
       border-bottom: 4px solid var(--red);
       padding: 2rem 1.5rem 1.75rem;
     }
     .hero-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; flex-wrap: wrap; }
     .hero-eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; font-weight: 500; }
-    .hero-h1 { font-family: var(--font-hd); font-size: clamp(28px,4vw,48px); font-weight: 700; color: #fff; line-height: 1.05; letter-spacing: -.01em; }
+    .hero-h1 { font-family: var(--font-hd); font-size: clamp(26px,3.5vw,44px); font-weight: 700; color: #fff; line-height: 1.05; letter-spacing: -.01em; }
     .hero-sub { margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.55); max-width: 560px; line-height: 1.6; }
     .hero-stats { display: flex; gap: 2rem; flex-shrink: 0; }
     .hstat { text-align: right; }
@@ -178,26 +174,26 @@
     .grid-view .card:hover { box-shadow: 0 4px 16px rgba(10,31,68,0.08); background: var(--white); }
     .grid-view .card-accent { display: none; }
     .grid-view .card-body { padding: 1rem; }
-    .grid-view .card.sector-motor        { border-top-color: #0A1F44; }
+    .grid-view .card.sector-motor        { border-top-color: #383737; }
     .grid-view .card.sector-aerospace    { border-top-color: #1E6EB5; }
     .grid-view .card.sector-recycling    { border-top-color: #1B7A4A; }
     .grid-view .card.sector-materials    { border-top-color: #C8102E; }
     .grid-view .card.sector-construction { border-top-color: #7B5EA7; }
 
     /* Accent stripe for list view */
-    .card.sector-motor        .card-accent { background: #0A1F44; }
+    .card.sector-motor        .card-accent { background: #383737; }
     .card.sector-aerospace    .card-accent { background: #1E6EB5; }
     .card.sector-recycling    .card-accent { background: #1B7A4A; }
     .card.sector-materials    .card-accent { background: #C8102E; }
     .card.sector-construction .card-accent { background: #7B5EA7; }
 
     /* Sector badge colours */
-    .pip-motor        { background: #0A1F44; }
+    .pip-motor        { background: #383737; }
     .pip-aerospace    { background: #1E6EB5; }
     .pip-recycling    { background: #1B7A4A; }
     .pip-materials    { background: #C8102E; }
     .pip-construction { background: #7B5EA7; }
-    .bdg-motor        { background: #E8EDF5; color: #0A1F44; }
+    .bdg-motor        { background: #E8EDF5; color: #383737; }
     .bdg-aerospace    { background: #E0EDF8; color: #1E6EB5; }
     .bdg-recycling    { background: #DFF3EA; color: #1B7A4A; }
     .bdg-materials    { background: #FDEAED; color: #C8102E; }
@@ -255,8 +251,12 @@
 <!-- TOPBAR -->
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="logo-wrap" href="/">
-      <div class="logo-box">HRC<sup style="font-size:10px">+</sup></div>
+    <a class="logo-wrap" href="/" style="gap:12px;text-decoration:none;">
+      <svg width="78" height="30" viewBox="0 0 78 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="24" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-weight="700" font-size="28" letter-spacing="-0.5" fill="#ffffff">HRC</text>
+        <rect x="62" y="2" width="5" height="16" fill="#e30613"/>
+        <rect x="56" y="8" width="17" height="5" fill="#e30613"/>
+      </svg>
       <div>
         <div class="logo-title">Composites Intelligence</div>
         <div class="logo-sub">Daily Market Overview</div>
@@ -272,9 +272,9 @@
 <section class="hero">
   <div class="hero-inner">
     <div>
-      <div class="hero-eyebrow">Composites Material Market Overview</div>
-      <h1 class="hero-h1">Live Industry Intelligence</h1>
-      <p class="hero-sub">Daily news across EU, China, USA and global composites markets — motor vehicles, aerospace, recycling and materials. Replacing your monthly PDF with a live feed.</p>
+      <div class="hero-eyebrow">HRC+ · Daily Intelligence Feed</div>
+      <h1 class="hero-h1">Composites Market<br>Intelligence</h1>
+      <p class="hero-sub">Real-time intelligence across EU, China, USA and global composites markets — motor vehicles, aerospace, recycling and advanced materials.</p>
     </div>
     <div class="hero-stats">
       <div class="hstat"><div class="hstat-n" id="stat-count">—</div><div class="hstat-l">Articles</div></div>
@@ -330,7 +330,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-logo">
-      <div class="logo-box" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;">HRC<sup style="font-size:9px">+</sup></div>
+      <svg width="56" height="22" viewBox="0 0 56 22" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="18" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-weight="700" font-size="20" letter-spacing="-0.5" fill="#ffffff">HRC</text><rect x="45" y="1" width="4" height="12" fill="#e30613"/><rect x="40" y="5" width="13" height="4" fill="#e30613"/></svg>
       <span class="footer-meta">Composites Material Market Overview · Updated daily</span>
     </div>
     <div class="footer-links">
