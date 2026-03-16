@@ -1,5 +1,11 @@
 // HRC Composites Hub — api/refresh.js
-// Sources: Direct RSS feeds from industry websites + OpenAI (if key set)
+// Improved version:
+// - broader relevance logic
+// - source diversity cap
+// - source priority scoring
+// - wider OEM / Tier-1 / market-context handling
+// - stronger company extraction
+// - keeps JEC as a source, not a company
 
 const RSS_FEEDS = [
   // ── AEROSPACE ──
@@ -221,6 +227,33 @@ const COMPOSITES_KEYWORDS = [
   'resin infusion','liquid molding','liquid moulding'
 ];
 
+const SOURCE_PRIORITY = {
+  'JEC Group': 3,
+  'CompositesWorld': 3,
+  'EuCIA': 3,
+  'Aviation Week': 2,
+  'AIN Online': 2,
+  'Aerospace Manufacturing': 2,
+  'Automotive News': 2,
+  'Automotive Dive': 2,
+  'AZO Materials': 2,
+  'Aviation Business News': 2,
+  'eMobility Engineering': 2,
+  'Energy Global': 2,
+  'H2 View': 2,
+  'Hydrogen Insight': 2,
+  'Interesting Engineering': 1,
+  'MotorTrend': 1,
+  'Motor Authority': 1,
+  'Automoblog': 1,
+  'Space.com': 1,
+  'Flying Magazine': 1,
+  'OpenAI Search': 2
+};
+
+const SOURCE_CAP = 6;
+const FINAL_LIMIT = 200;
+
 function categSector(title, desc) {
   const t = (title + ' ' + (desc || '')).toLowerCase();
   for (const r of SECTOR_RULES) {
@@ -321,7 +354,25 @@ function extractKeywords(title, summary) {
 
 function isCompositeRelevant(title, summary) {
   const text = (title + ' ' + (summary || '')).toLowerCase();
-  return COMPOSITES_KEYWORDS.some(kw => text.includes(kw));
+
+  const hasCompositeKeyword = COMPOSITES_KEYWORDS.some(kw => text.includes(kw));
+  const hasPriorityKeyword = [...HRC_PRIORITY_KEYWORDS, ...MARKET_CONTEXT_KEYWORDS].some(kw => text.includes(kw));
+  const hasImportantCompany = COMPANY_RULES.some(name => text.includes(name));
+  const hasApplicationContext =
+    text.includes('lightweight') ||
+    text.includes('lightweighting') ||
+    text.includes('battery enclosure') ||
+    text.includes('body panel') ||
+    text.includes('hydrogen tank') ||
+    text.includes('pressure vessel') ||
+    text.includes('structural component') ||
+    text.includes('interior structure') ||
+    text.includes('aerostructure') ||
+    text.includes('cross-car beam') ||
+    text.includes('door module') ||
+    text.includes('seat structure');
+
+  return hasCompositeKeyword || hasPriorityKeyword || (hasImportantCompany && hasApplicationContext);
 }
 
 function scoreHRCRelevance(article) {
@@ -626,15 +677,28 @@ module.exports = async function handler(req, res) {
       return true;
     });
 
-    console.log(`[HRC] Before dedup: ${beforeDedup}, after dedup: ${articles.length}, removed: ${beforeDedup - articles.length}`);
-
+    // Sort by relevance, then source quality, then recency
     articles.sort((a, b) => {
       const rel = { high: 3, medium: 2, low: 1 };
+      const sa = SOURCE_PRIORITY[a.source] || 1;
+      const sb = SOURCE_PRIORITY[b.source] || 1;
+
       return (rel[b.hrcRelevance] || 0) - (rel[a.hrcRelevance] || 0)
+        || sb - sa
         || new Date(b.date) - new Date(a.date);
     });
 
-    articles = articles.slice(0, 120);
+    // Cap per source to prevent one publisher dominating
+    const perSource = {};
+    articles = articles.filter(a => {
+      const s = a.source || 'Unknown';
+      perSource[s] = (perSource[s] || 0) + 1;
+      return perSource[s] <= SOURCE_CAP;
+    });
+
+    console.log(`[HRC] Before dedup: ${beforeDedup}, after dedup/source-cap: ${articles.length}, removed: ${beforeDedup - articles.length}`);
+
+    articles = articles.slice(0, FINAL_LIMIT);
 
     const highRelevanceCount = articles.filter(a => a.hrcRelevance === 'high').length;
 
@@ -660,6 +724,11 @@ module.exports = async function handler(req, res) {
       return acc;
     }, {});
 
+    const sourceCounts = articles.reduce((acc, a) => {
+      acc[a.source] = (acc[a.source] || 0) + 1;
+      return acc;
+    }, {});
+
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -678,6 +747,7 @@ module.exports = async function handler(req, res) {
         companyCounts,
         regionCounts,
         sectorCounts,
+        sourceCounts,
       },
     });
   } catch (err) {
