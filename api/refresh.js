@@ -63,18 +63,54 @@ const RSS_FEEDS = [
 ];
 
 const AI_PROMPTS = [
-  { region: 'eu',     prompt: 'Search for the latest composites industry news from Europe (EU, UK, Germany, France, Italy) in the last 7 days. Cover motor vehicles (CFRP cars, motorsport), aerospace (Airbus, DAHER, drones), recycling (bio-composites, end-of-life), materials (JEC awards, manufacturing). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
-  { region: 'china',  prompt: 'Search for the latest composites industry news from China in the last 7 days. Cover motor vehicles (EV supercars, flying cars), aerospace (eVTOL, UAV), recycling (wind turbine blades), materials (Zhongfu Shenying, Jinggong, CFRP precursor). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
-  { region: 'usa',    prompt: 'Search for the latest composites industry news from USA and North America in the last 7 days. Cover motor vehicles (CFRP vehicles, lightweighting), aerospace (Boeing, Joby, NASA, eVTOL), recycling (carbon fiber recycling), materials (Hexcel, Cytec, new composites). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
-  { region: 'global', prompt: 'Search for the latest global composites industry news in the last 7 days. Focus on key players (Toray, Hexcel, Solvay, Teijin, SGL Carbon), market trends, M&A, JEC/CompositesWorld coverage, wind energy composites, major innovation awards. Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.' },
+  {
+    region: 'eu',
+    prompt: 'Search for the latest composites industry news from Europe (EU, UK, Germany, France, Italy) in the last 7 days. Cover motor vehicles (CFRP cars, motorsport, Forvia, Magna, European OEMs, Europe automotive market), aerospace (Airbus, DAHER, drones), recycling (bio-composites, end-of-life), materials (JEC awards, manufacturing). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials|construction","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
+  },
+  {
+    region: 'china',
+    prompt: 'Search for the latest composites industry news from China in the last 7 days. Cover motor vehicles (EV supercars, flying cars, major OEMs), aerospace (eVTOL, UAV), recycling (wind turbine blades), materials (Zhongfu Shenying, Jinggong, CFRP precursor). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials|construction","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
+  },
+  {
+    region: 'usa',
+    prompt: 'Search for the latest composites industry news from USA and North America in the last 7 days. Cover motor vehicles (CFRP vehicles, lightweighting, Magna, major OEMs, US automotive market), aerospace (Boeing, Joby, NASA, eVTOL), recycling (carbon fiber recycling), materials (Hexcel, Cytec, new composites). Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials|construction","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
+  },
+  {
+    region: 'global',
+    prompt: 'Search for the latest global composites industry news in the last 7 days. Focus on key players (Toray, Hexcel, Solvay, Teijin, SGL Carbon, Forvia, Magna), automotive OEM activity, market trends, M&A, JEC/CompositesWorld coverage, wind energy composites, major innovation awards. Return ONLY a JSON array, no markdown, no code fences. Format: [{"title":"...","summary":"1-2 sentence factual summary","sector":"motor|aerospace|recycling|materials|construction","source":"publication name","url":"https://...","date":"YYYY-MM-DD"}]. Return 8 items.'
+  },
 ];
 
 const SECTOR_RULES = [
-  { sector: 'motor',        words: ['automotive','vehicle','car','ev','electric vehicle','motorsport','formula','bmw','ferrari','mercedes','audi','toyota','volkswagen','supercar','flying car','chassis','lightweighting','van','truck','motort'] },
-  { sector: 'aerospace',    words: ['aerospace','aircraft','airbus','boeing','aviation','satellite','uav','drone','space','fuselage','wing','rocket','evtol','helicopter','propeller','nacelle','easa','faa'] },
-  { sector: 'recycling',    words: ['recycl','reclaim','end-of-life','circular','bio-based','sustainable','degradation','reuse','reprocess','closed-loop','hemp','flax','natural fiber','natural fibre','wind blade'] },
-  { sector: 'construction', words: ['construction','bridge','infrastructure','rebar','wind turbine','blade','building','structural','concrete','civil','offshore','marine','pressure vessel','pipeline','rail','railway','hydrogen','h2','energy'] },
-  { sector: 'materials',    words: ['carbon fiber','carbon fibre','cfrp','prepreg','epoxy','resin','thermoplastic','autoclave','infusion','pultrusion','filament winding','precursor','tensile','modulus','composite material'] },
+  { sector: 'motor', words: [
+    'automotive','vehicle','car','ev','electric vehicle','motorsport','formula',
+    'bmw','ferrari','mercedes','audi','toyota','volkswagen','ford','gm','tesla',
+    'stellantis','renault','porsche','mclaren','lamborghini','rivian','lucid',
+    'byd','xpeng','nio','geely','forvia','magna','valeo','bosch','continental',
+    'chassis','lightweighting','van','truck','body panel','battery enclosure',
+    'cross-car beam','interior structure','seat structure','door module',
+    'automotive market','vehicle production','oem','tier 1','tier-one supplier'
+  ]},
+  { sector: 'aerospace', words: [
+    'aerospace','aircraft','airbus','boeing','aviation','satellite','uav','drone',
+    'space','fuselage','wing','rocket','evtol','helicopter','propeller','nacelle',
+    'easa','faa'
+  ]},
+  { sector: 'recycling', words: [
+    'recycl','reclaim','end-of-life','circular','bio-based','sustainable',
+    'degradation','reuse','reprocess','closed-loop','hemp','flax','natural fiber',
+    'natural fibre','wind blade'
+  ]},
+  { sector: 'construction', words: [
+    'construction','bridge','infrastructure','rebar','wind turbine','blade',
+    'building','structural','concrete','civil','offshore','marine','pressure vessel',
+    'pipeline','rail','railway','hydrogen','h2','energy'
+  ]},
+  { sector: 'materials', words: [
+    'carbon fiber','carbon fibre','cfrp','prepreg','epoxy','resin','thermoplastic',
+    'autoclave','infusion','pultrusion','filament winding','precursor','tensile',
+    'modulus','composite material'
+  ]},
 ];
 
 const REGION_RULES = [
@@ -91,9 +127,9 @@ const COMPANY_RULES = [
   'zhongfu shenying', 'jinggong', 'mingyang', 'catack-h', 'posco',
 
   // Tier 1 / suppliers
-  'forvia', 'magna', 'plastic omnium', 'cia compiegne', 'cia compositi',
-  'brose', 'adient', 'lear', 'aptiv', 'valeo', 'bosch', 'continental',
-  'zf', 'zf friedrichshafen', 'faurecia', 'yanfeng', 'denso', 'aisin',
+  'forvia', 'magna', 'plastic omnium', 'brose', 'adient', 'lear', 'aptiv',
+  'valeo', 'bosch', 'continental', 'zf', 'zf friedrichshafen', 'faurecia',
+  'yanfeng', 'denso', 'aisin',
 
   // Europe OEMs
   'bmw', 'mercedes', 'mercedes-benz', 'audi', 'volkswagen', 'vw',
@@ -111,7 +147,6 @@ const COMPANY_RULES = [
 
   // Aerospace / mobility
   'joby', 'volocopter', 'eviation', 'northrop', 'lockheed', 'nasa'
-];
 ];
 
 const SIGNAL_RULES = [
@@ -132,6 +167,28 @@ const HRC_PRIORITY_KEYWORDS = [
   'thermoplastic composite', 'battery enclosure', 'composite blade', 'pultrusion',
   'filament winding', 'prepreg', 'structural composite', 'rtm', 'resin transfer molding',
   'out-of-autoclave', 'autoclave', 'composite pressure vessel', 'carbon fiber recycling'
+];
+
+const MARKET_CONTEXT_KEYWORDS = [
+  'europe automotive market',
+  'european automotive market',
+  'eu automotive market',
+  'us automotive market',
+  'u.s. automotive market',
+  'north america automotive market',
+  'auto market europe',
+  'auto market us',
+  'vehicle production europe',
+  'vehicle production usa',
+  'automotive demand europe',
+  'automotive demand us',
+  'lightweighting market',
+  'automotive composites market',
+  'composite body panels',
+  'battery enclosure',
+  'structural battery pack',
+  'ev platform',
+  'vehicle architecture'
 ];
 
 const COMPOSITES_KEYWORDS = [
@@ -164,10 +221,6 @@ const COMPOSITES_KEYWORDS = [
   'resin infusion','liquid molding','liquid moulding'
 ];
 
-function toTitleCase(str) {
-  return str.replace(/\b\w/g, c => c.toUpperCase());
-}
-
 function categSector(title, desc) {
   const t = (title + ' ' + (desc || '')).toLowerCase();
   for (const r of SECTOR_RULES) {
@@ -199,7 +252,50 @@ function stripHtml(str) {
 function extractCompanies(title, summary) {
   const text = (title + ' ' + (summary || '')).toLowerCase();
   const found = COMPANY_RULES.filter(name => text.includes(name));
-  return [...new Set(found.map(toTitleCase))];
+
+  const normalized = found.map(name => {
+    const map = {
+      'gm': 'GM',
+      'vw': 'Volkswagen',
+      'jlr': 'JLR',
+      'zf': 'ZF',
+      'syensqo': 'Syensqo',
+      'sgl carbon': 'SGL Carbon',
+      'owens corning': 'Owens Corning',
+      'general motors': 'General Motors',
+      'mercedes-benz': 'Mercedes-Benz',
+      'jaguar land rover': 'JLR',
+      'forvia': 'Forvia',
+      'magna': 'Magna',
+      'plastic omnium': 'Plastic Omnium',
+      'continental': 'Continental',
+      'bosch': 'Bosch',
+      'valeo': 'Valeo',
+      'stellantis': 'Stellantis',
+      'renault': 'Renault',
+      'tesla': 'Tesla',
+      'ford': 'Ford',
+      'bmw': 'BMW',
+      'audi': 'Audi',
+      'porsche': 'Porsche',
+      'airbus': 'Airbus',
+      'boeing': 'Boeing',
+      'hexcel': 'Hexcel',
+      'toray': 'Toray',
+      'solvay': 'Solvay',
+      'teijin': 'Teijin',
+      'fairmat': 'Fairmat',
+      'byd': 'BYD',
+      'xpeng': 'XPeng',
+      'nio': 'NIO',
+      'geely': 'Geely',
+      'gkn': 'GKN',
+      'nasa': 'NASA'
+    };
+    return map[name] || name.replace(/\b\w/g, c => c.toUpperCase());
+  });
+
+  return [...new Set(normalized)];
 }
 
 function detectSignal(title, summary) {
@@ -218,7 +314,9 @@ function isMarketReportSpam(title, summary) {
 
 function extractKeywords(title, summary) {
   const text = (title + ' ' + (summary || '')).toLowerCase();
-  return HRC_PRIORITY_KEYWORDS.filter(k => text.includes(k)).slice(0, 6);
+  return [...HRC_PRIORITY_KEYWORDS, ...MARKET_CONTEXT_KEYWORDS]
+    .filter(k => text.includes(k))
+    .slice(0, 8);
 }
 
 function isCompositeRelevant(title, summary) {
@@ -229,23 +327,52 @@ function isCompositeRelevant(title, summary) {
 function scoreHRCRelevance(article) {
   let score = 0;
   const text = (article.title + ' ' + (article.summary || '')).toLowerCase();
+  const companiesText = (article.companies || []).join(' ').toLowerCase();
 
   if (article.sector === 'motor' || article.sector === 'aerospace') score += 2;
   if (article.sector === 'recycling') score += 2;
   if (article.sector === 'construction') score += 1;
   if (article.companies.length) score += 2;
-  if (article.signal === 'partnership' || article.signal === 'capacity_expansion' || article.signal === 'oem_adoption') score += 2;
-  if (article.signal === 'technology' || article.signal === 'investment' || article.signal === 'recycling') score += 1;
+
+  if (
+    companiesText.includes('forvia') ||
+    companiesText.includes('magna') ||
+    companiesText.includes('bmw') ||
+    companiesText.includes('mercedes') ||
+    companiesText.includes('audi') ||
+    companiesText.includes('volkswagen') ||
+    companiesText.includes('ford') ||
+    companiesText.includes('general motors') ||
+    companiesText.includes('tesla') ||
+    companiesText.includes('stellantis') ||
+    companiesText.includes('renault') ||
+    companiesText.includes('byd')
+  ) score += 2;
+
+  if (
+    article.signal === 'partnership' ||
+    article.signal === 'capacity_expansion' ||
+    article.signal === 'oem_adoption'
+  ) score += 2;
+
+  if (
+    article.signal === 'technology' ||
+    article.signal === 'investment' ||
+    article.signal === 'recycling'
+  ) score += 1;
+
   if (HRC_PRIORITY_KEYWORDS.some(k => text.includes(k))) score += 2;
+  if (MARKET_CONTEXT_KEYWORDS.some(k => text.includes(k))) score += 1;
   if (isMarketReportSpam(article.title, article.summary)) score -= 3;
 
-  if (score >= 6) return 'high';
-  if (score >= 3) return 'medium';
+  if (score >= 7) return 'high';
+  if (score >= 4) return 'medium';
   return 'low';
 }
 
 function buildWhyItMatters(article) {
   const parts = [];
+  const text = (article.title + ' ' + (article.summary || '')).toLowerCase();
 
   if (article.signal === 'partnership') {
     parts.push('Signals active collaboration in the composites value chain.');
@@ -262,8 +389,9 @@ function buildWhyItMatters(article) {
   if (article.signal === 'technology') {
     parts.push('Highlights technical progress that may affect future performance or manufacturing benchmarks.');
   }
+
   if (article.sector === 'motor') {
-    parts.push('Relevant to lightweighting and mobility applications.');
+    parts.push('Relevant to lightweighting, EV platforms, and automotive composite applications.');
   }
   if (article.sector === 'aerospace') {
     parts.push('Relevant to high-performance structural composites demand.');
@@ -271,6 +399,17 @@ function buildWhyItMatters(article) {
   if (article.sector === 'construction') {
     parts.push('Relevant to infrastructure, energy, or pressure-vessel composite applications.');
   }
+
+  if (
+    text.includes('automotive market') ||
+    text.includes('vehicle production') ||
+    text.includes('europe automotive market') ||
+    text.includes('us automotive market') ||
+    text.includes('north america automotive market')
+  ) {
+    parts.push('Useful as a macro demand signal for future automotive composites adoption.');
+  }
+
   if (!parts.length) {
     parts.push('Relevant as a sector activity signal within the composites market.');
   }
@@ -292,7 +431,7 @@ function buildImplication(article) {
     return 'Useful benchmark for aerospace composites demand and qualification direction.';
   }
   if (article.sector === 'motor') {
-    return 'Useful benchmark for automotive lightweighting and application trends.';
+    return 'Useful benchmark for automotive lightweighting, Tier 1 activity, and OEM application trends.';
   }
   if (article.sector === 'construction') {
     return 'Useful for monitoring composite infrastructure, hydrogen, and energy application trends.';
@@ -445,8 +584,8 @@ module.exports = async function handler(req, res) {
 
     articles = articles.filter(a => a.url && a.title && a.title.length > 10);
 
-    // Only keep composites-relevant content.
-    // Remove low-value market-report spam unless relevance is not low.
+    // Keep composites-relevant content only.
+    // Remove low-value market-report spam unless relevance is medium/high.
     articles = articles.filter(a =>
       isCompositeRelevant(a.title, a.summary) &&
       !(a.isMarketReportSpam && a.hrcRelevance === 'low')
@@ -454,7 +593,7 @@ module.exports = async function handler(req, res) {
 
     const beforeDedup = articles.length;
 
-    // Deduplicate — full URL, slug, and normalized title
+    // Deduplicate by full URL, slug, and normalized title
     const seenUrls = new Set();
     const seenSlugs = new Set();
     const seenTitles = new Set();
