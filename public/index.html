@@ -173,7 +173,7 @@
     }
     .grid-view .card:hover { box-shadow: 0 4px 16px rgba(10,31,68,0.08); background: var(--white); }
     .grid-view .card-accent { display: none; }
-    .grid-view .card-body { padding: 1rem; }
+    .grid-view .card-body { padding: 1rem; min-height: 100px; }
     .grid-view .card.sector-motor        { border-top-color: #383737; }
     .grid-view .card.sector-aerospace    { border-top-color: #1E6EB5; }
     .grid-view .card.sector-recycling    { border-top-color: #1B7A4A; }
@@ -360,7 +360,7 @@
   };
   const SECTOR_ORDER = ['motor','aerospace','recycling','materials'];
 
-  let all = [], activeRegion = 'all', activeSector = 'all', activeView = 'grid';
+  let all = [], activeRegion = 'all', activeSector = 'all', activeView = 'list';
 
   document.getElementById('region-tabs').addEventListener('click', e => {
     const b = e.target.closest('[data-region]'); if (!b) return;
@@ -397,6 +397,8 @@
   function cardHTML(a) {
     const sm = SECTORS[a.sector] || SECTORS.materials;
     const summary = (a.summary || '').trim();
+    // Skip cards with no title and no summary — they render as blank boxes
+    if (!a.title || a.title.trim().length < 5) return '';
     return `
       <a class="card sector-${a.sector}" href="${a.url||'#'}" target="${a.url?'_blank':'_self'}" rel="noopener">
         <div class="card-accent"></div>
@@ -406,7 +408,7 @@
             <span class="ago">${ago(a.date)}</span>
           </div>
           <div class="card-title">${a.title}</div>
-          ${summary ? `<div class="card-summary">${summary}</div>` : ''}
+          ${summary ? `<div class="card-summary">${summary}</div>` : '<div class="card-summary-empty"></div>'}
           <div class="card-footer">
             <span class="card-src">${a.source||''}</span>
             ${a.url ? `<a class="card-link" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read ↗</a>` : ''}
