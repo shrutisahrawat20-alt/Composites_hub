@@ -192,6 +192,45 @@ module.exports = async function handler(req, res) {
     let articles = [...rssResults.flat(), ...aiResults.flat()];
     articles = articles.filter(a => a.url && a.title && a.title.length > 10);
 
+    // ── COMPOSITES RELEVANCE FILTER ───────────────────────────────────────────
+    // Only keep articles genuinely about composites, carbon fiber, or directly
+    // related materials/applications. Rejects unrelated general news.
+    const COMPOSITES_KEYWORDS = [
+      'composite','carbon fiber','carbon fibre','cfrp','prepreg','epoxy resin',
+      'glass fiber','glass fibre','gfrp','thermoplastic composite','thermoset',
+      'resin transfer','filament winding','autoclave','pultrusion','infusion',
+      'natural fiber composite','natural fibre composite','bio-composite',
+      'hemp fiber','flax fiber','basalt fiber','aramid','kevlar',
+      'carbon nanotube','nanocomposite','carbon reinforced','fiber reinforced',
+      'fibre reinforced','sandwich panel','honeycomb core','woven fabric',
+      'ud tape','unidirectional tape','dry fiber placement','afp ','atl ',
+      'toray','hexcel','solvay','teijin','sgl carbon','cytec','chomarat',
+      'owens corning','jec world','jeccomposites','compositesworld',
+      'eucia','acma','sampe','iacmi','reinforced plastic',
+      'composite fuselage','composite wing','composite aerostructure',
+      'composite blade','composite propeller','cfrp aircraft','composite uav',
+      'cfrp chassis','carbon fiber car','composite body panel','composite ev',
+      'wind turbine blade','recyclable blade','wind blade',
+      'composite pressure vessel','composite pipe','composite tank',
+      'hydrogen tank composite','frp rebar','composite rebar','frp bridge',
+      'gfrp bridge','fiber reinforced concrete','frp profile',
+      'recycled carbon fiber','carbon fiber recycl','composite recycl',
+      'frp recycl','end-of-life composite','pyrolysis carbon',
+      'composites market','carbon fiber market','composite material',
+      'composites industry','composite manufacturer','composite supplier',
+      'advanced material','lightweight material','structural composite',
+      'matrix resin','fiber volume','void content','delamination',
+      'out-of-autoclave','oa curing','resin infusion','liquid molding',
+    ];
+
+    function isCompositeRelevant(title, summary) {
+      const text = (title + ' ' + (summary || '')).toLowerCase();
+      return COMPOSITES_KEYWORDS.some(kw => text.includes(kw));
+    }
+
+    articles = articles.filter(a => isCompositeRelevant(a.title, a.summary));
+    // ─────────────────────────────────────────────────────────────────────────
+
     const seen = new Set();
     articles = articles.filter(a => {
       const key = a.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 55);
