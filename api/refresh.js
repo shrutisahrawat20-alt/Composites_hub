@@ -25,10 +25,7 @@ const RSS_FEEDS = [
 
   // ── COMPOSITES (primary sources) ──
   { url: 'https://www.compositesworld.com/rss/all',                    source: 'CompositesWorld',            region: 'global', sector: 'materials' },
-  { url: 'https://www.composites.media/feed',                          source: 'Composites Media',           region: 'eu',     sector: 'materials' },
   { url: 'https://www.jeccomposites.com/feed/',                        source: 'JEC Group',                  region: 'eu',     sector: 'materials' },
-  { url: 'https://www.compositestoday.com/feed/',                      source: 'Composites Today',           region: 'global', sector: 'materials' },
-  { url: 'https://www.compositesweekly.com/feed/',                     source: 'Composites Weekly',          region: 'global', sector: 'materials' },
   { url: 'https://eucia.eu/category/news/feed',                        source: 'EuCIA',                      region: 'eu',     sector: 'recycling' },
 
   // ── UAV / DRONE ──
