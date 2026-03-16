@@ -84,13 +84,34 @@ const REGION_RULES = [
 ];
 
 const COMPANY_RULES = [
+  // Composites / materials
   'airbus', 'boeing', 'toray', 'hexcel', 'solvay', 'syensqo', 'teijin',
   'sgl carbon', 'mitsubishi chemical', 'owens corning', 'fairmat',
-  'gen 2 carbon', 'carbon conversions', 'bcomp', 'jlr', 'jaguar land rover',
-  'bmw', 'mercedes', 'tesla', 'byd', 'xpeng', 'joby', 'volocopter',
-  'eviation', 'northrop', 'lockheed', 'nasa', 'jec', 'compositesworld',
-  'eucia', 'safran', 'daher', 'gkn', 'aircraft interiors international',
-  'zhongfu shenying', 'jinggong', 'mingyang', 'catack-h', 'posco'
+  'gen 2 carbon', 'carbon conversions', 'bcomp', 'safran', 'daher', 'gkn',
+  'zhongfu shenying', 'jinggong', 'mingyang', 'catack-h', 'posco',
+
+  // Tier 1 / suppliers
+  'forvia', 'magna', 'plastic omnium', 'cia compiegne', 'cia compositi',
+  'brose', 'adient', 'lear', 'aptiv', 'valeo', 'bosch', 'continental',
+  'zf', 'zf friedrichshafen', 'faurecia', 'yanfeng', 'denso', 'aisin',
+
+  // Europe OEMs
+  'bmw', 'mercedes', 'mercedes-benz', 'audi', 'volkswagen', 'vw',
+  'porsche', 'lamborghini', 'ferrari', 'stellantis', 'renault',
+  'peugeot', 'citroen', 'opel', 'seat', 'skoda', 'cupra',
+  'jaguar land rover', 'jlr', 'aston martin', 'mclaren', 'volvo',
+
+  // US OEMs
+  'ford', 'general motors', 'gm', 'chevrolet', 'cadillac', 'gmc',
+  'tesla', 'rivian', 'lucid', 'jeep', 'ram',
+
+  // China / APAC OEMs
+  'byd', 'xpeng', 'nio', 'geely', 'saic', 'chery', 'gac',
+  'toyota', 'honda', 'nissan', 'mazda', 'subaru', 'hyundai', 'kia',
+
+  // Aerospace / mobility
+  'joby', 'volocopter', 'eviation', 'northrop', 'lockheed', 'nasa'
+];
 ];
 
 const SIGNAL_RULES = [
