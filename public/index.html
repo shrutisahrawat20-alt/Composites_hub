@@ -1,516 +1,1010 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HRC — Composites Material Market Intelligence</title>
-  <meta name="description" content="HRC daily composites market intelligence. Carbon fiber, aerospace, automotive, recycling news across EU, China, USA and global markets." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HRC+ Composites Intelligence</title>
+  <meta name="description" content="HRC daily market intelligence across EU, China, USA and global composites markets." />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --red:     #e30613;
-      --navy:    #383737;
-      --navy2:   #2e2e2e;
-      --white:   #ffffff;
-      --off:     #f7f7f7;
-      --border:  #e0e0e0;
-      --text:    #1A1F2E;
-      --muted:   #6B7280;
-      --light:   #f2f2f2;
-      --font:    'Inter', system-ui, sans-serif;
-      --font-hd: 'Barlow Condensed', sans-serif;
-      --radius:  6px;
-      --radius-lg: 10px;
+    :root{
+      --bg:#f6f6f7;
+      --white:#ffffff;
+      --text:#232323;
+      --muted:#6f6f73;
+      --line:#dddddf;
+      --line-2:#ececef;
+      --red:#e30613;
+      --charcoal:#383737;
+      --light:#f1f1f2;
+      --radius-sm:10px;
+      --radius-md:14px;
+      --radius-lg:18px;
+      --shadow-sm:0 2px 10px rgba(0,0,0,.04);
+      --shadow-md:0 8px 24px rgba(0,0,0,.08);
+      --max:1280px;
     }
 
-    html { scroll-behavior: smooth; }
-    body { background: var(--off); color: var(--text); font-family: var(--font); min-height: 100vh; font-size: 14px; line-height: 1.6; }
-
-    /* ── TOPBAR ── */
-    .topbar {
-      background: var(--navy);
-      position: sticky; top: 0; z-index: 100;
-      border-bottom: 3px solid var(--red);
-    }
-    .topbar-inner {
-      max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;
-      height: 56px; display: flex; align-items: center; gap: 16px;
-    }
-    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo-box { display: none; }
-    .logo-title {
-      font-family: var(--font-hd); font-size: 13px; font-weight: 600;
-      letter-spacing: .06em; text-transform: uppercase;
-      color: rgba(255,255,255,0.90); line-height: 1.2; font-size: 14px; letter-spacing: .03em;
-    }
-    .logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: .04em; }
-    .topbar-gap { flex: 1; }
-    .topbar-date { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: .04em; }
-    .btn-refresh {
-      font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
-      padding: 6px 14px; border: 1px solid rgba(255,255,255,0.25); border-radius: 20px;
-      background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; transition: all .2s;
-    }
-    .btn-refresh:hover { background: var(--red); border-color: var(--red); color: #fff; }
-    .btn-refresh:disabled { opacity: .35; cursor: not-allowed; }
-
-    /* ── HERO BANNER ── */
-    .hero {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy) 100%);
-      border-bottom: 4px solid var(--red);
-      padding: 2rem 1.5rem 1.75rem;
-    }
-    .hero-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; flex-wrap: wrap; }
-    .hero-eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; font-weight: 500; }
-    .hero-h1 { font-family: var(--font-hd); font-size: clamp(26px,3.5vw,44px); font-weight: 700; color: #fff; line-height: 1.05; letter-spacing: -.01em; }
-    .hero-sub { margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.55); max-width: 560px; line-height: 1.6; }
-    .hero-stats { display: flex; gap: 2rem; flex-shrink: 0; }
-    .hstat { text-align: right; }
-    .hstat-n { font-family: var(--font-hd); font-size: 32px; font-weight: 700; color: #fff; line-height: 1; }
-    .hstat-l { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: .07em; text-transform: uppercase; margin-top: 3px; }
-
-    /* ── REGION TABS ── */
-    .region-nav {
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 56px; z-index: 90;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    .region-nav-inner {
-      max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;
-      display: flex; align-items: center; gap: 0; overflow-x: auto; scrollbar-width: none;
-    }
-    .region-nav-inner::-webkit-scrollbar { display: none; }
-    .rtab {
-      font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-      padding: 14px 18px; border-bottom: 3px solid transparent;
-      color: var(--muted); cursor: pointer; background: none; border-top: none; border-left: none; border-right: none;
-      transition: all .18s; white-space: nowrap; margin-bottom: -1px;
-    }
-    .rtab:hover { color: var(--navy); }
-    .rtab.active { color: var(--navy); border-bottom-color: var(--red); }
-    .rtab-flag { margin-right: 6px; font-size: 14px; }
-
-    /* ── CONTROLS ── */
-    .controls {
-      max-width: 1400px; margin: 0 auto; padding: .9rem 1.5rem;
-      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-    }
-    .sector-tabs { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
-    .stab {
-      font-size: 11px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase;
-      padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);
-      background: var(--white); color: var(--muted); cursor: pointer; transition: all .18s;
-    }
-    .stab:hover { border-color: var(--navy); color: var(--navy); }
-    .stab.active { background: var(--navy); border-color: var(--navy); color: #fff; }
-    .stab.active.red { background: var(--red); border-color: var(--red); }
-
-    .search-wrap { position: relative; }
-    .search-ico { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; pointer-events: none; }
-    .search-input {
-      font-size: 12px; padding: 6px 12px 6px 28px; width: 200px;
-      background: var(--white); border: 1px solid var(--border); border-radius: 20px;
-      color: var(--text); outline: none; transition: border-color .2s;
-    }
-    .search-input:focus { border-color: var(--navy); }
-    .search-input::placeholder { color: var(--muted); }
-
-    .sort-sel {
-      font-size: 11px; letter-spacing: .04em; padding: 6px 10px;
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: 20px; color: var(--muted); cursor: pointer; outline: none;
+    * { box-sizing:border-box; }
+    html,body { margin:0; padding:0; }
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.45;
     }
 
-    /* ── MAIN ── */
-    .main { max-width: 1400px; margin: 0 auto; padding: 1.25rem 1.5rem 4rem; }
+    a { color:inherit; text-decoration:none; }
+    button, input, select { font:inherit; }
 
-    /* Region header */
-    .region-header {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 1.25rem;
+    .wrap{
+      width:min(var(--max), calc(100% - 32px));
+      margin:0 auto;
     }
-    .region-flag { font-size: 22px; }
-    .region-title { font-family: var(--font-hd); font-size: 22px; font-weight: 700; color: var(--navy); letter-spacing: -.01em; }
-    .region-count { font-size: 11px; color: var(--muted); letter-spacing: .05em; margin-left: auto; }
-    .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-right: 6px; animation: blink 2s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-    /* Sector group */
-    .sector-group { margin-bottom: 2rem; }
-    .sector-label {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: .75rem; padding-bottom: .5rem;
-      border-bottom: 1px solid var(--border);
+    /* Top bar */
+    .topbar{
+      background:var(--charcoal);
+      color:#fff;
+      border-bottom:4px solid var(--red);
     }
-    .sector-pip { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-
-    /* Cards grid */
-    .cards-grid { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-    .cards-grid.grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; border: none; border-radius: 0; overflow: visible; }
-
-    /* Card — list row default */
-    .card {
-      background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; flex-direction: row; align-items: stretch;
-      transition: background .12s; text-decoration: none; color: inherit; padding: 0;
+    .topbar-inner{
+      width:min(var(--max), calc(100% - 32px));
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:10px 0;
     }
-    .card:last-child { border-bottom: none; }
-    .card:hover { background: var(--light); }
-    .card-accent { width: 3px; flex-shrink: 0; }
-    .card-body { flex: 1; padding: .75rem 1rem; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-
-    /* Card — grid style */
-    .grid-view .card {
-      display: flex; flex-direction: column; border-bottom: none;
-      border: 1px solid var(--border); border-radius: var(--radius-lg);
-      border-top: 3px solid transparent;
+    .brand{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      min-width:0;
     }
-    .grid-view .card:hover { box-shadow: 0 4px 16px rgba(10,31,68,0.08); background: var(--white); }
-    .grid-view .card-accent { display: none; }
-    .grid-view .card-body { padding: 1rem; flex: 1; }
-    .grid-view .card.sector-motor        { border-top-color: #383737; }
-    .grid-view .card.sector-aerospace    { border-top-color: #1E6EB5; }
-    .grid-view .card.sector-recycling    { border-top-color: #1B7A4A; }
-    .grid-view .card.sector-materials    { border-top-color: #C8102E; }
-    .grid-view .card.sector-construction { border-top-color: #7B5EA7; }
+    .brand-mark{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-shrink:0;
+    }
+    .brand-copy{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+      padding-top:1px;
+    }
+    .brand-title{
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+      color:#fff;
+    }
+    .brand-sub{
+      font-size:12px;
+      color:#d8d8da;
+      letter-spacing:.02em;
+      margin-top:2px;
+    }
 
-    /* Accent stripe for list view */
-    .card.sector-motor        .card-accent { background: #383737; }
-    .card.sector-aerospace    .card-accent { background: #1E6EB5; }
-    .card.sector-recycling    .card-accent { background: #1B7A4A; }
-    .card.sector-materials    .card-accent { background: #C8102E; }
-    .card.sector-construction .card-accent { background: #7B5EA7; }
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .updated{
+      font-size:12px;
+      color:#d3d3d6;
+      white-space:nowrap;
+    }
+    .refresh-btn{
+      border:1px solid rgba(255,255,255,.25);
+      color:#fff;
+      background:transparent;
+      border-radius:999px;
+      padding:9px 14px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .refresh-btn:hover{ background:rgba(255,255,255,.08); }
 
-    /* Sector badge colours */
-    .pip-motor        { background: #383737; }
-    .pip-aerospace    { background: #1E6EB5; }
-    .pip-recycling    { background: #1B7A4A; }
-    .pip-materials    { background: #C8102E; }
-    .pip-construction { background: #7B5EA7; }
-    .bdg-motor        { background: #E8EDF5; color: #383737; }
-    .bdg-aerospace    { background: #E0EDF8; color: #1E6EB5; }
-    .bdg-recycling    { background: #DFF3EA; color: #1B7A4A; }
-    .bdg-materials    { background: #FDEAED; color: #C8102E; }
-    .bdg-construction { background: #F0ECF9; color: #5A3E8A; }
+    /* Hero */
+    .hero{
+      background:linear-gradient(180deg, #3d3c3c 0%, #2f2f2f 100%);
+      color:#fff;
+      border-bottom:4px solid var(--red);
+    }
+    .hero-inner{
+      width:min(var(--max), calc(100% - 32px));
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1.2fr auto;
+      gap:24px;
+      align-items:end;
+      padding:26px 0 28px;
+    }
+    .eyebrow{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#ffb7bc;
+      margin-bottom:8px;
+    }
+    .hero h1{
+      margin:0 0 8px;
+      font-size:clamp(34px,5vw,54px);
+      line-height:.95;
+      letter-spacing:-.03em;
+      font-weight:800;
+    }
+    .hero p{
+      margin:0;
+      max-width:760px;
+      color:#dddddf;
+      font-size:16px;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(70px, 1fr));
+      gap:20px;
+      align-items:end;
+      min-width:230px;
+    }
+    .stat{
+      text-align:center;
+    }
+    .stat-num{
+      font-size:26px;
+      font-weight:800;
+      line-height:1;
+      color:#fff;
+    }
+    .stat-lbl{
+      margin-top:6px;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#cfcfd2;
+    }
 
-    .card-body { padding: .7rem 1rem; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-    .card-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: nowrap; }
-    .badge { font-size: 9px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; line-height: 1.6; }
-    .ago { font-size: 10px; color: var(--muted); white-space: nowrap; flex-shrink: 0; margin-left: auto; }
-    .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.4; color: var(--text); }
-    .card-summary { font-size: 12px; color: var(--muted); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .card-summary:empty, .card-summary-empty { display: none; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 2px; border-top: 1px solid var(--border); margin-top: 4px; }
-    .card-src { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%; }
-    .card-link { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--red); text-decoration: none; white-space: nowrap; flex-shrink: 0; }
-    .card-link:hover { opacity: .7; }
-    .card-meta { display: none; }
+    /* Region nav */
+    .region-nav{
+      background:#ececed;
+      border-bottom:1px solid var(--line);
+    }
+    .region-nav-inner{
+      width:min(var(--max), calc(100% - 32px));
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      overflow:auto;
+      padding:12px 0;
+      scrollbar-width:none;
+    }
+    .region-nav-inner::-webkit-scrollbar{ display:none; }
 
-    /* ── STATES ── */
-    .state-box { text-align: center; padding: 5rem 1rem; }
-    .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin .75s linear infinite; margin: 0 auto 14px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .state-text { font-size: 13px; color: var(--muted); }
-    .btn-load { display: inline-block; margin-top: 16px; font-size: 12px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; padding: 9px 22px; background: var(--navy); color: #fff; border: none; border-radius: 22px; cursor: pointer; transition: background .2s; }
-    .btn-load:hover { background: var(--red); }
+    .rtab{
+      border:none;
+      background:transparent;
+      color:#6c6c72;
+      padding:8px 12px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      cursor:pointer;
+    }
+    .rtab:hover{ background:#e5e5e7; color:#333; }
+    .rtab.active{
+      background:#fff;
+      color:#232323;
+      box-shadow:var(--shadow-sm);
+    }
 
-    /* ── DIVIDER ── */
-    .region-divider { border: none; border-top: 2px solid var(--border); margin: 2.5rem 0; }
+    /* Controls */
+    .controls{
+      width:min(var(--max), calc(100% - 32px));
+      margin:14px auto 0;
+      display:grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap:12px;
+      align-items:center;
+    }
+    .sector-tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .stab{
+      border:1px solid var(--line);
+      background:#fff;
+      color:#6d6d72;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .stab:hover{ background:#f8f8f8; }
+    .stab.active{
+      background:var(--charcoal);
+      color:#fff;
+      border-color:var(--charcoal);
+    }
 
-    /* ── FOOTER ── */
-    footer { background: var(--navy); border-top: 3px solid var(--red); padding: 1.5rem; }
-    .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-    .footer-logo { display: flex; align-items: center; gap: 8px; }
-    .footer-meta { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: .04em; }
-    .footer-links { display: flex; gap: 1rem; }
-    .footer-links a { font-size: 11px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color .15s; }
-    .footer-links a:hover { color: rgba(255,255,255,0.8); }
+    .search-wrap{
+      position:relative;
+      min-width:220px;
+    }
+    .search-ico{
+      position:absolute;
+      left:12px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#9a9aa0;
+      font-size:13px;
+      pointer-events:none;
+    }
+    .search-input{
+      width:100%;
+      height:40px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:0 14px 0 34px;
+      color:var(--text);
+      outline:none;
+    }
+    .search-input:focus{
+      border-color:#bdbdc2;
+      box-shadow:0 0 0 3px rgba(227,6,19,.08);
+    }
 
-    /* ── VIEW TOGGLE ── */
-    .view-tgl { display: flex; gap: 4px; }
-    .view-btn { width: 30px; height: 30px; border: 1px solid var(--border); background: var(--white); border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; transition: all .15s; }
-    .view-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .sort-sel{
+      height:40px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      padding:0 12px;
+      color:var(--text);
+      min-width:120px;
+    }
 
-    .grid-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+    .view-tgl{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .view-btn{
+      width:38px;
+      height:38px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      color:#555;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .view-btn.active{
+      background:var(--charcoal);
+      color:#fff;
+      border-color:var(--charcoal);
+    }
 
-    @media(max-width:640px) {
-      .hero-inner { flex-direction: column; align-items: flex-start; }
-      .hero-stats { flex-direction: row; }
-      .hstat { text-align: left; }
-      .search-input { width: 150px; }
-      .topbar-date { display: none; }
+    /* Main */
+    .main{
+      width:min(var(--max), calc(100% - 32px));
+      margin:28px auto 56px;
+    }
+
+    .meta-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .meta-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:16px;
+      font-weight:800;
+    }
+    .meta-count{
+      font-size:13px;
+      color:#b66472;
+    }
+
+    .state-box{
+      padding:40px 20px;
+      text-align:center;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-sm);
+    }
+    .state-text{ color:var(--muted); }
+    .spinner{
+      width:24px;
+      height:24px;
+      border:3px solid #e5e5e7;
+      border-top-color:var(--red);
+      border-radius:50%;
+      margin:0 auto 14px;
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .region-group{ margin-bottom:30px; }
+    .region-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .region-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:17px;
+      font-weight:800;
+    }
+    .region-total{
+      color:#b46c77;
+      font-size:13px;
+    }
+
+    .sector-group{
+      margin-bottom:28px;
+    }
+    .sector-label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:#6c6c72;
+      margin:0 0 12px;
+      padding-bottom:10px;
+      border-bottom:1px solid var(--line);
+    }
+    .sector-pip{
+      width:8px;
+      height:8px;
+      border-radius:2px;
+      flex-shrink:0;
+      background:#999;
+    }
+    .pip-motor{ background:#383737; }
+    .pip-aerospace{ background:#1E6EB5; }
+    .pip-recycling{ background:#1B7A4A; }
+    .pip-materials{ background:#C8102E; }
+    .pip-construction{ background:#7B5EA7; }
+
+    /* Cards */
+    .cards-grid{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .cards-grid.grid-view{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+      gap:14px;
+    }
+
+    .card{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-left:4px solid #383737;
+      border-radius:var(--radius-md);
+      padding:14px 16px;
+      min-width:0;
+      box-shadow:var(--shadow-sm);
+      transition:transform .12s ease, box-shadow .15s ease, background .12s ease;
+    }
+    .card:hover{
+      background:#fff;
+      transform:translateY(-1px);
+      box-shadow:var(--shadow-md);
+    }
+
+    .card.sector-motor{ border-left-color:#383737; }
+    .card.sector-aerospace{ border-left-color:#1E6EB5; }
+    .card.sector-recycling{ border-left-color:#1B7A4A; }
+    .card.sector-materials{ border-left-color:#C8102E; }
+    .card.sector-construction{ border-left-color:#7B5EA7; }
+
+    .card-body{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+      flex:1;
+    }
+    .card-top,
+    .card-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 9px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.07em;
+      text-transform:uppercase;
+      line-height:1.3;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .bdg-motor{ background:#ececef; color:#383737; }
+    .bdg-aerospace{ background:#e6f0fb; color:#1E6EB5; }
+    .bdg-recycling{ background:#e4f4ec; color:#1B7A4A; }
+    .bdg-materials{ background:#f9e7ea; color:#C8102E; }
+    .bdg-construction{ background:#eee9f9; color:#7B5EA7; }
+
+    .ago{
+      margin-left:auto;
+      font-size:11px;
+      color:#7b7b81;
+      white-space:nowrap;
+    }
+
+    .card-title{
+      font-size:17px;
+      font-weight:750;
+      line-height:1.32;
+      color:#222;
+      letter-spacing:-.01em;
+    }
+
+    .card-summary{
+      font-size:14px;
+      color:#666870;
+      line-height:1.58;
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:3;
+      overflow:hidden;
+    }
+
+    .card-footer{
+      border-top:1px solid var(--line-2);
+      padding-top:8px;
+      margin-top:auto;
+    }
+
+    .card-src{
+      font-size:12px;
+      color:#7a7a80;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:72%;
+    }
+
+    .card-link{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--red);
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .card-link:hover{ opacity:.72; }
+
+    .empty-note{
+      color:#8a8a90;
+      font-size:13px;
+      padding:8px 0 2px;
+    }
+
+    /* Footer */
+    footer{
+      background:var(--charcoal);
+      color:#fff;
+      margin-top:60px;
+    }
+    .footer-inner{
+      width:min(var(--max), calc(100% - 32px));
+      margin:0 auto;
+      padding:18px 0 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+    .footer-logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .footer-meta{
+      color:#d0d0d4;
+      font-size:12px;
+    }
+    .footer-links{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .footer-links a{
+      color:#fff;
+      font-size:12px;
+      opacity:.9;
+    }
+    .footer-links a:hover{ opacity:1; }
+
+    @media (max-width: 980px){
+      .hero-inner{
+        grid-template-columns:1fr;
+      }
+      .stats{
+        justify-self:start;
+      }
+      .controls{
+        grid-template-columns:1fr;
+      }
+      .search-wrap,
+      .sort-sel,
+      .view-tgl{
+        width:100%;
+      }
+      .view-tgl{ justify-content:flex-end; }
+    }
+
+    @media (max-width: 640px){
+      .wrap,
+      .topbar-inner,
+      .hero-inner,
+      .region-nav-inner,
+      .controls,
+      .main,
+      .footer-inner{
+        width:min(var(--max), calc(100% - 20px));
+      }
+      .hero h1{ font-size:38px; }
+      .card{ padding:13px 14px; }
+      .card-title{ font-size:16px; }
+      .card-summary{ font-size:13px; }
+      .stats{
+        grid-template-columns:repeat(3, minmax(54px, 1fr));
+        gap:14px;
+      }
+      .stat-num{ font-size:22px; }
     }
   </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="logo-wrap" href="/" style="gap:12px;text-decoration:none;">
-      <svg width="78" height="30" viewBox="0 0 78 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <text x="0" y="24" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-weight="700" font-size="28" letter-spacing="-0.5" fill="#ffffff">HRC</text>
-        <rect x="62" y="2" width="5" height="16" fill="#e30613"/>
-        <rect x="56" y="8" width="17" height="5" fill="#e30613"/>
-      </svg>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg width="44" height="22" viewBox="0 0 56 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <text x="0" y="18" font-family="Arial, sans-serif" font-weight="700" font-size="20" letter-spacing="-0.5" fill="#ffffff">HRC</text>
+            <rect x="45" y="1" width="4" height="12" fill="#e30613"/>
+            <rect x="40" y="5" width="13" height="4" fill="#e30613"/>
+          </svg>
+          <div class="brand-copy">
+            <div class="brand-title">Composites Intelligence</div>
+            <div class="brand-sub">Daily Market Overview</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="updated" id="updated-text">Updated —</div>
+        <button class="refresh-btn" onclick="load(true)">↻ Refresh</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
       <div>
-        <div class="logo-title">Composites Intelligence</div>
-        <div class="logo-sub">Daily Market Overview</div>
+        <div class="eyebrow">HRC+ · Daily Intelligence Feed</div>
+        <h1>Intelligence</h1>
+        <p>
+          Real-time intelligence across EU, China, USA and global composites markets —
+          motor vehicles, aerospace, recycling and advanced materials.
+        </p>
       </div>
-    </a>
-    <div class="topbar-gap"></div>
-    <span class="topbar-date" id="last-updated">—</span>
-    <button class="btn-refresh" id="btn-refresh" onclick="load()">↻ Refresh</button>
-  </div>
-</header>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-inner">
-    <div>
-      <div class="hero-eyebrow">HRC+ · Daily Intelligence Feed</div>
-      <h1 class="hero-h1">Composites Market<br>Intelligence</h1>
-      <p class="hero-sub">Real-time intelligence across EU, China, USA and global composites markets — motor vehicles, aerospace, recycling and advanced materials.</p>
-    </div>
-    <div class="hero-stats">
-      <div class="hstat"><div class="hstat-n" id="stat-count">—</div><div class="hstat-l">Articles</div></div>
-      <div class="hstat"><div class="hstat-n">4</div><div class="hstat-l">Regions</div></div>
-      <div class="hstat"><div class="hstat-n">24h</div><div class="hstat-l">Refresh</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- REGION TABS -->
-<nav class="region-nav">
-  <div class="region-nav-inner" id="region-tabs">
-    <button class="rtab active" data-region="all"><span class="rtab-flag">🌐</span>All Regions</button>
-    <button class="rtab" data-region="eu"><span class="rtab-flag">🇪🇺</span>Europe</button>
-    <button class="rtab" data-region="china"><span class="rtab-flag">🇨🇳</span>China</button>
-    <button class="rtab" data-region="usa"><span class="rtab-flag">🇺🇸</span>USA / North America</button>
-    <button class="rtab" data-region="global"><span class="rtab-flag">🌍</span>Global</button>
-  </div>
-</nav>
-
-<!-- CONTROLS -->
-<div class="controls">
-  <div class="sector-tabs" id="sector-tabs">
-    <button class="stab active" data-sector="all">All sectors</button>
-    <button class="stab" data-sector="motor">Motor Vehicles</button>
-    <button class="stab" data-sector="aerospace">Aerospace</button>
-    <button class="stab" data-sector="recycling">Recycling</button>
-    <button class="stab" data-sector="materials">Materials &amp; Others</button>
-  </div>
-  <div class="search-wrap">
-    <span class="search-ico">⌕</span>
-    <input class="search-input" id="search" type="text" placeholder="Search articles…" oninput="render()" />
-  </div>
-  <select class="sort-sel" id="sort-sel" onchange="render()">
-    <option value="latest">Latest first</option>
-    <option value="region">By region</option>
-    <option value="sector">By sector</option>
-  </select>
-  <div class="view-tgl">
-    <button class="view-btn active" id="btn-grid" title="Grid" onclick="setView('grid')">▦</button>
-    <button class="view-btn" id="btn-list" title="List" onclick="setView('list')">☰</button>
-  </div>
-</div>
-
-<!-- MAIN -->
-<main class="main" id="main">
-  <div class="state-box">
-    <div class="spinner"></div>
-    <div class="state-text">Loading composites intelligence…</div>
-  </div>
-</main>
-
-<footer>
-  <div class="footer-inner">
-    <div class="footer-logo">
-      <svg width="56" height="22" viewBox="0 0 56 22" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="18" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-weight="700" font-size="20" letter-spacing="-0.5" fill="#ffffff">HRC</text><rect x="45" y="1" width="4" height="12" fill="#e30613"/><rect x="40" y="5" width="13" height="4" fill="#e30613"/></svg>
-      <span class="footer-meta">Composites Material Market Overview · Updated daily</span>
-    </div>
-    <div class="footer-links">
-      <a href="https://www.compositesworld.com" target="_blank" rel="noopener">CompositesWorld ↗</a>
-      <a href="https://www.jeccomposites.com" target="_blank" rel="noopener">JEC Group ↗</a>
-      <a href="https://www.aviationweek.com" target="_blank" rel="noopener">Aviation Week ↗</a>
-      <a href="https://evtolinsights.com" target="_blank" rel="noopener">eVTOL Insights ↗</a>
-      <a href="https://www.azom.com" target="_blank" rel="noopener">AZO Materials ↗</a>
-    </div>
-  </div>
-</footer>
-
-<script>
-  const REGIONS = {
-    eu:     { label: 'Europe',            flag: '🇪🇺' },
-    china:  { label: 'China',             flag: '🇨🇳' },
-    usa:    { label: 'USA / North America',flag: '🇺🇸' },
-    global: { label: 'Global',            flag: '🌍' },
-  };
-  const REGION_ORDER = ['eu','china','usa','global'];
-
-  const SECTORS = {
-    motor:     { label: 'Motor Vehicles',    pip: 'pip-motor',     bdg: 'bdg-motor' },
-    aerospace: { label: 'Aerospace',         pip: 'pip-aerospace', bdg: 'bdg-aerospace' },
-    recycling: { label: 'Recycling',         pip: 'pip-recycling', bdg: 'bdg-recycling' },
-    materials: { label: 'Materials & Others',pip: 'pip-materials', bdg: 'bdg-materials' },
-  };
-  const SECTOR_ORDER = ['motor','aerospace','recycling','materials'];
-
-  let all = [], activeRegion = 'all', activeSector = 'all', activeView = 'list';
-
-  document.getElementById('region-tabs').addEventListener('click', e => {
-    const b = e.target.closest('[data-region]'); if (!b) return;
-    activeRegion = b.dataset.region;
-    document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
-    b.classList.add('active');
-    render();
-  });
-  document.getElementById('sector-tabs').addEventListener('click', e => {
-    const b = e.target.closest('[data-sector]'); if (!b) return;
-    activeSector = b.dataset.sector;
-    document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
-    b.classList.add('active');
-    render();
-  });
-
-  function setView(v) {
-    activeView = v;
-    const grid = document.getElementById('news-grid');
-    if (grid) grid.classList.toggle('grid-view', v === 'grid');
-    document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
-    document.getElementById('btn-list').classList.toggle('active', v === 'list');
-    render();
-  }
-
-  function ago(iso) {
-    const s = (Date.now() - new Date(iso)) / 1000;
-    if (s < 3600)   return Math.round(s/60)    + 'm ago';
-    if (s < 86400)  return Math.round(s/3600)  + 'h ago';
-    if (s < 604800) return Math.round(s/86400) + 'd ago';
-    return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-  }
-
-  function cardHTML(a) {
-    const sm = SECTORS[a.sector] || SECTORS.materials;
-    const summary = (a.summary || '').trim();
-    // Skip cards with no title and no summary — they render as blank boxes
-    if (!a.title || a.title.trim().length < 5) return '';
-    return `
-      <a class="card sector-${a.sector}" href="${a.url||'#'}" target="${a.url?'_blank':'_self'}" rel="noopener">
-        <div class="card-accent"></div>
-        <div class="card-body">
-          <div class="card-top">
-            <span class="badge ${sm.bdg}">${sm.label}</span>
-            <span class="ago">${ago(a.date)}</span>
-          </div>
-          <div class="card-title">${a.title}</div>
-          ${summary ? `<div class="card-summary">${summary}</div>` : ''}
-          <div class="card-footer">
-            <span class="card-src">${a.source||''}</span>
-            ${a.url ? `<a class="card-link" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read ↗</a>` : ''}
-          </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num" id="stat-articles">0</div>
+          <div class="stat-lbl">Articles</div>
         </div>
-      </a>`;
-  }
-
-  function render() {
-    const q      = document.getElementById('search').value.toLowerCase();
-    const sort   = document.getElementById('sort-sel').value;
-    let items    = all.filter(a => a.title && a.title.trim().length > 5);
-
-    if (activeRegion !== 'all') items = items.filter(a => a.region === activeRegion);
-    if (activeSector !== 'all') items = items.filter(a => a.sector === activeSector);
-    if (q) items = items.filter(a =>
-      a.title.toLowerCase().includes(q) ||
-      (a.summary||'').toLowerCase().includes(q) ||
-      (a.source||'').toLowerCase().includes(q)
-    );
-
-    if (sort === 'region') items.sort((a,b) => (a.region||'').localeCompare(b.region||''));
-    else if (sort === 'sector') items.sort((a,b) => (a.sector||'').localeCompare(b.sector||''));
-    else items.sort((a,b) => new Date(b.date)-new Date(a.date));
-
-    document.getElementById('stat-count').textContent = all.length;
-
-    const main = document.getElementById('main');
-    if (!items.length) {
-      main.innerHTML = '<div class="state-box"><div class="state-text">No articles match your filters.</div></div>';
-      return;
-    }
-
-    // Group by region when showing all, or flat grid when filtered
-    if (activeRegion === 'all' && activeSector === 'all' && sort === 'latest' && !q) {
-      // Show grouped by region → sector
-      let html = '';
-      const regions = REGION_ORDER.filter(r => items.some(a => a.region === r));
-      regions.forEach((r, ri) => {
-        const rItems = items.filter(a => a.region === r);
-        const rMeta  = REGIONS[r];
-        if (!rItems.length) return;
-        if (ri > 0) html += '<hr class="region-divider"/>';
-        html += `<div class="region-header">
-          <span class="region-flag">${rMeta.flag}</span>
-          <span class="region-title">${rMeta.label}</span>
-          <span class="region-count"><span class="live-dot"></span>${rItems.length} articles</span>
-        </div>`;
-        SECTOR_ORDER.forEach(s => {
-          const sItems = rItems.filter(a => a.sector === s);
-          if (!sItems.length) return;
-          const sm = SECTORS[s] || SECTORS.materials;
-          html += `<div class="sector-group">
-            <div class="sector-label"><span class="sector-pip ${sm.pip}"></span>${sm.label}</div>
-            <div class="cards-grid${activeView==='grid'?' grid-view':''}">${sItems.map(cardHTML).join('')}</div>
-          </div>`;
-        });
-      });
-      main.innerHTML = html;
-    } else {
-      // Flat filtered view
-      const rMeta = activeRegion !== 'all' ? REGIONS[activeRegion] : null;
-      let html = `<div class="grid-hdr">
-        <div class="region-count" style="font-size:12px;color:var(--muted);">
-          <span class="live-dot"></span>${items.length} articles${rMeta ? ' · '+rMeta.flag+' '+rMeta.label : ''}${q?' · "'+q+'"':''}
+        <div class="stat">
+          <div class="stat-num">4</div>
+          <div class="stat-lbl">Regions</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">24h</div>
+          <div class="stat-lbl">Refresh</div>
         </div>
       </div>
-      <div class="cards-grid${activeView==='grid'?' grid-view':''}">${items.map(cardHTML).join('')}</div>`;
-      main.innerHTML = html;
-    }
-  }
+    </div>
+  </section>
 
-  async function load() {
-    const btn = document.getElementById('btn-refresh');
-    btn.disabled = true; btn.textContent = '⟳ Loading…';
-    document.getElementById('main').innerHTML =
-      '<div class="state-box"><div class="spinner"></div><div class="state-text">Scanning global industry sources…</div></div>';
-    try {
-      const res  = await fetch('/api/refresh');
-      const data = await res.json();
-      if (!res.ok || !data.articles) throw new Error(data.error || 'Failed');
+  <!-- REGION TABS -->
+  <nav class="region-nav">
+    <div class="region-nav-inner" id="region-tabs">
+      <button class="rtab active" data-region="all"><span>🌐</span>All Regions</button>
+      <button class="rtab" data-region="eu"><span>🇪🇺</span>Europe</button>
+      <button class="rtab" data-region="china"><span>🇨🇳</span>China</button>
+      <button class="rtab" data-region="usa"><span>🇺🇸</span>USA / North America</button>
+      <button class="rtab" data-region="global"><span>🌍</span>Global</button>
+    </div>
+  </nav>
 
-      all = data.articles;
-      const d = new Date(data.fetchedAt);
-      document.getElementById('last-updated').textContent =
-        'Updated ' + d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) +
-        ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) + ' UTC';
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="sector-tabs" id="sector-tabs">
+      <button class="stab active" data-sector="all">All Sectors</button>
+      <button class="stab" data-sector="motor">Motor Vehicles</button>
+      <button class="stab" data-sector="aerospace">Aerospace</button>
+      <button class="stab" data-sector="recycling">Recycling</button>
+      <button class="stab" data-sector="materials">Materials &amp; Others</button>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-ico">⌕</span>
+      <input class="search-input" id="search" type="text" placeholder="Search articles..." oninput="render()" />
+    </div>
+
+    <select class="sort-sel" id="sort-sel" onchange="render()">
+      <option value="latest">Latest first</option>
+      <option value="region">By region</option>
+      <option value="sector">By sector</option>
+    </select>
+
+    <div class="view-tgl">
+      <button class="view-btn" id="btn-grid" title="Grid" onclick="setView('grid')">▦</button>
+      <button class="view-btn active" id="btn-list" title="List" onclick="setView('list')">☰</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <div class="state-box">
+      <div class="spinner"></div>
+      <div class="state-text">Loading composites intelligence...</div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <svg width="56" height="22" viewBox="0 0 56 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <text x="0" y="18" font-family="Arial, sans-serif" font-weight="700" font-size="20" letter-spacing="-0.5" fill="#ffffff">HRC</text>
+          <rect x="45" y="1" width="4" height="12" fill="#e30613"/>
+          <rect x="40" y="5" width="13" height="4" fill="#e30613"/>
+        </svg>
+        <span class="footer-meta">Composites Material Market Overview · Updated daily</span>
+      </div>
+
+      <div class="footer-links">
+        <a href="https://www.compositesworld.com" target="_blank" rel="noopener">CompositesWorld ↗</a>
+        <a href="https://www.jeccomposites.com" target="_blank" rel="noopener">JEC ↗</a>
+        <a href="https://www.eucia.eu" target="_blank" rel="noopener">EuCIA ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const REGIONS = {
+      all:    { label: 'All Regions', flag: '🌐' },
+      eu:     { label: 'Europe', flag: '🇪🇺' },
+      china:  { label: 'China', flag: '🇨🇳' },
+      usa:    { label: 'USA / North America', flag: '🇺🇸' },
+      global: { label: 'Global', flag: '🌍' }
+    };
+
+    const SECTORS = {
+      motor:        { label:'Motor Vehicles', cls:'sector-motor', pip:'pip-motor', bdg:'bdg-motor' },
+      aerospace:    { label:'Aerospace', cls:'sector-aerospace', pip:'pip-aerospace', bdg:'bdg-aerospace' },
+      recycling:    { label:'Recycling', cls:'sector-recycling', pip:'pip-recycling', bdg:'bdg-recycling' },
+      materials:    { label:'Materials & Others', cls:'sector-materials', pip:'pip-materials', bdg:'bdg-materials' },
+      construction: { label:'Construction', cls:'sector-construction', pip:'pip-construction', bdg:'bdg-construction' }
+    };
+
+    let all = [];
+    let activeRegion = 'all';
+    let activeSector = 'all';
+    let activeView = 'list';
+
+    document.getElementById('region-tabs').addEventListener('click', e => {
+      const b = e.target.closest('[data-region]');
+      if (!b) return;
+      activeRegion = b.dataset.region;
+      document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+      b.classList.add('active');
       render();
-    } catch(err) {
-      document.getElementById('main').innerHTML =
-        `<div class="state-box">
-          <div class="state-text" style="color:var(--red)">Could not load feeds: ${err.message}</div>
-          <button class="btn-load" onclick="load()">Try Again</button>
-        </div>`;
-    } finally {
-      btn.disabled = false; btn.textContent = '↻ Refresh';
-    }
-  }
+    });
 
-  load();
-</script>
+    document.getElementById('sector-tabs').addEventListener('click', e => {
+      const b = e.target.closest('[data-sector]');
+      if (!b) return;
+      activeSector = b.dataset.sector;
+      document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+      b.classList.add('active');
+      render();
+    });
+
+    function setView(v){
+      activeView = v;
+      document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
+      document.getElementById('btn-list').classList.toggle('active', v === 'list');
+      render();
+    }
+
+    function escapeHtml(str=''){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+
+    function ago(iso){
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      const s = (Date.now() - d.getTime()) / 1000;
+      if (s < 3600)   return Math.max(1, Math.round(s/60)) + 'm ago';
+      if (s < 86400)  return Math.round(s/3600) + 'h ago';
+      if (s < 604800) return Math.round(s/86400) + 'd ago';
+      return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+    }
+
+    function fmtUpdated(iso){
+      const d = new Date(iso);
+      if (isNaN(d)) return 'Updated —';
+      const date = d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+      const time = d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false });
+      return `Updated ${date} ${time} UTC`;
+    }
+
+    function normalizeArticle(a){
+      return {
+        title: (a.title || '').trim(),
+        summary: (a.summary || '').trim(),
+        source: (a.source || '').trim(),
+        url: a.url || '',
+        date: a.date || new Date().toISOString(),
+        region: a.region || 'global',
+        sector: a.sector || 'materials'
+      };
+    }
+
+    function cardHTML(a){
+      const sm = SECTORS[a.sector] || SECTORS.materials;
+      const summary = (a.summary || '').trim();
+
+      if (!a.title || a.title.trim().length < 5) return '';
+
+      return `
+        <a class="card ${sm.cls}" href="${escapeHtml(a.url || '#')}" target="${a.url ? '_blank' : '_self'}" rel="noopener">
+          <div class="card-body">
+            <div class="card-top">
+              <span class="badge ${sm.bdg}">${escapeHtml(sm.label)}</span>
+              <span class="ago">${escapeHtml(ago(a.date))}</span>
+            </div>
+            <div class="card-title">${escapeHtml(a.title)}</div>
+            ${summary ? `<div class="card-summary">${escapeHtml(summary)}</div>` : ''}
+            <div class="card-footer">
+              <span class="card-src">${escapeHtml(a.source || '')}</span>
+              ${a.url ? `<span class="card-link">Read ↗</span>` : ''}
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    function sortItems(items, mode){
+      const copy = [...items];
+      if (mode === 'latest'){
+        copy.sort((a,b) => new Date(b.date) - new Date(a.date));
+      } else if (mode === 'region'){
+        const order = { eu:1, china:2, usa:3, global:4 };
+        copy.sort((a,b) => (order[a.region] || 99) - (order[b.region] || 99) || (new Date(b.date) - new Date(a.date)));
+      } else if (mode === 'sector'){
+        const order = { motor:1, aerospace:2, recycling:3, materials:4, construction:5 };
+        copy.sort((a,b) => (order[a.sector] || 99) - (order[b.sector] || 99) || (new Date(b.date) - new Date(a.date)));
+      }
+      return copy;
+    }
+
+    function groupBy(arr, key){
+      return arr.reduce((acc, item) => {
+        (acc[item[key]] ||= []).push(item);
+        return acc;
+      }, {});
+    }
+
+    function regionHeader(regionKey, count){
+      const region = REGIONS[regionKey] || REGIONS.global;
+      return `
+        <div class="region-head">
+          <div class="region-title">
+            <span>${region.flag}</span>
+            <span>${escapeHtml(region.label)}</span>
+          </div>
+          <div class="region-total">${count} article${count === 1 ? '' : 's'}</div>
+        </div>
+      `;
+    }
+
+    function sectorBlock(sectorKey, items){
+      const sector = SECTORS[sectorKey] || SECTORS.materials;
+      const cardsClass = activeView === 'grid' ? 'cards-grid grid-view' : 'cards-grid';
+      const cards = items.map(cardHTML).filter(Boolean).join('');
+
+      if (!cards) return '';
+
+      return `
+        <section class="sector-group">
+          <div class="sector-label">
+            <span class="sector-pip ${sector.pip}"></span>
+            <span>${escapeHtml(sector.label)}</span>
+          </div>
+          <div class="${cardsClass}">
+            ${cards}
+          </div>
+        </section>
+      `;
+    }
+
+    function render(){
+      const q = document.getElementById('search').value.trim().toLowerCase();
+      const sort = document.getElementById('sort-sel').value;
+      let items = all
+        .map(normalizeArticle)
+        .filter(a => a.title && a.title.length > 4);
+
+      if (activeRegion !== 'all') items = items.filter(a => a.region === activeRegion);
+      if (activeSector !== 'all') items = items.filter(a => a.sector === activeSector);
+
+      if (q){
+        items = items.filter(a =>
+          a.title.toLowerCase().includes(q) ||
+          (a.summary || '').toLowerCase().includes(q) ||
+          (a.source || '').toLowerCase().includes(q)
+        );
+      }
+
+      items = sortItems(items, sort);
+
+      document.getElementById('stat-articles').textContent = items.length;
+
+      const main = document.getElementById('main');
+
+      if (!items.length){
+        main.innerHTML = `
+          <div class="state-box">
+            <div class="state-text">No relevant articles found for the current filters.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const byRegion = groupBy(items, 'region');
+      const regionOrder = activeRegion === 'all'
+        ? ['eu', 'china', 'usa', 'global']
+        : [activeRegion];
+
+      let html = `
+        <div class="meta-row">
+          <div class="meta-title">
+            <span>${REGIONS[activeRegion]?.flag || '🌐'}</span>
+            <span>${escapeHtml(REGIONS[activeRegion]?.label || 'All Regions')}</span>
+          </div>
+          <div class="meta-count">${items.length} article${items.length === 1 ? '' : 's'}</div>
+        </div>
+      `;
+
+      for (const regionKey of regionOrder){
+        const regionItems = byRegion[regionKey] || [];
+        if (!regionItems.length) continue;
+
+        const bySector = groupBy(regionItems, 'sector');
+        const sectorOrder = activeSector === 'all'
+          ? ['motor', 'aerospace', 'recycling', 'materials', 'construction']
+          : [activeSector];
+
+        let sectorHtml = '';
+        for (const sectorKey of sectorOrder){
+          const sectorItems = bySector[sectorKey] || [];
+          if (!sectorItems.length) continue;
+          sectorHtml += sectorBlock(sectorKey, sectorItems);
+        }
+
+        if (!sectorHtml) continue;
+
+        html += `
+          <section class="region-group">
+            ${regionHeader(regionKey, regionItems.length)}
+            ${sectorHtml}
+          </section>
+        `;
+      }
+
+      main.innerHTML = html || `
+        <div class="state-box">
+          <div class="state-text">No relevant articles found for the current filters.</div>
+        </div>
+      `;
+    }
+
+    async function load(force = false){
+      const main = document.getElementById('main');
+      main.innerHTML = `
+        <div class="state-box">
+          <div class="spinner"></div>
+          <div class="state-text">${force ? 'Refreshing intelligence...' : 'Loading composites intelligence...'}</div>
+        </div>
+      `;
+
+      try{
+        const url = force ? `/api/refresh?t=${Date.now()}` : `/api/refresh`;
+        const res = await fetch(url, { cache:'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        all = Array.isArray(data.articles) ? data.articles : [];
+
+        const updated = data.fetchedAt || new Date().toISOString();
+        document.getElementById('updated-text').textContent = fmtUpdated(updated);
+
+        render();
+      } catch (err){
+        main.innerHTML = `
+          <div class="state-box">
+            <div class="state-text">Unable to load intelligence feed. Please try refresh.</div>
+          </div>
+        `;
+        console.error(err);
+      }
+    }
+
+    load();
+  </script>
 </body>
 </html>
