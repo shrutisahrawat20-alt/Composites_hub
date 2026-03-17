@@ -6,6 +6,7 @@
 // - company newsroom support
 // - media vs company sourceType
 // - OEM / Tier-1 / market-context handling
+// - hydrogen / pressure-vessel keywords removed
 
 const RSS_FEEDS = [
   // ── AEROSPACE ──
@@ -69,8 +70,6 @@ const RSS_FEEDS = [
 ];
 
 // Add real newsroom RSS feeds here when you have them.
-// Example shape:
-// { url: 'https://example.com/news/rss', source: 'Hexcel', region: 'usa', sector: 'materials', company: 'Hexcel', sourceType: 'company' }
 const COMPANY_FEEDS = [
   // Materials / composites
   // { url: '...', source: 'Hexcel', region: 'usa', sector: 'materials', company: 'Hexcel', sourceType: 'company' },
@@ -101,31 +100,30 @@ const COMPANY_FEEDS = [
   // { url: '...', source: 'Safran', region: 'eu', sector: 'aerospace', company: 'Safran', sourceType: 'company' },
 ];
 
-// Uses official sites via web search when RSS is missing.
 const COMPANY_AI_PROMPTS = [
-  { company: 'Hexcel',         region: 'usa',    sector: 'materials',   prompt: 'Find the latest official news from Hexcel website about composites, carbon fiber, aerospace, automotive, recycling, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Hexcel","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Syensqo',        region: 'eu',     sector: 'materials',   prompt: 'Find the latest official news from Syensqo website about composites, advanced materials, aerospace, automotive, lightweighting, or recycling. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Syensqo","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'SGL Carbon',     region: 'eu',     sector: 'materials',   prompt: 'Find the latest official news from SGL Carbon website about carbon fiber, composites, automotive, aerospace, energy, or materials. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"SGL Carbon","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Teijin',         region: 'global', sector: 'materials',   prompt: 'Find the latest official news from Teijin website about carbon fiber, composites, automotive, aerospace, or materials. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Teijin","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Toray',          region: 'global', sector: 'materials',   prompt: 'Find the latest official news from Toray website about carbon fiber, CFRP, composites, aerospace, automotive, or materials. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Toray","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Hexcel',         region: 'usa',    sector: 'materials', prompt: 'Find the latest official news from Hexcel website about composites, carbon fiber, aerospace, automotive, recycling, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Hexcel","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Syensqo',        region: 'eu',     sector: 'materials', prompt: 'Find the latest official news from Syensqo website about composites, advanced materials, aerospace, automotive, lightweighting, or recycling. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Syensqo","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'SGL Carbon',     region: 'eu',     sector: 'materials', prompt: 'Find the latest official news from SGL Carbon website about carbon fiber, composites, automotive, aerospace, energy, or materials. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"SGL Carbon","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Teijin',         region: 'global', sector: 'materials', prompt: 'Find the latest official news from Teijin website about carbon fiber, composites, automotive, aerospace, or materials. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Teijin","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Toray',          region: 'global', sector: 'materials', prompt: 'Find the latest official news from Toray website about carbon fiber, CFRP, composites, aerospace, automotive, or materials. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Toray","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
 
-  { company: 'Forvia',         region: 'eu',     sector: 'motor',       prompt: 'Find the latest official news from Forvia website about lightweighting, composites, battery enclosures, structural components, automotive materials, or OEM programs. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Forvia","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Magna',          region: 'usa',    sector: 'motor',       prompt: 'Find the latest official news from Magna website about lightweight structures, composites, battery enclosures, automotive systems, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Magna","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Valeo',          region: 'eu',     sector: 'motor',       prompt: 'Find the latest official news from Valeo website about automotive structures, lightweighting, EV platforms, materials, or sustainability. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Valeo","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Forvia',         region: 'eu',     sector: 'motor', prompt: 'Find the latest official news from Forvia website about lightweighting, composites, battery enclosures, structural components, automotive materials, or OEM programs. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Forvia","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Magna',          region: 'usa',    sector: 'motor', prompt: 'Find the latest official news from Magna website about lightweight structures, composites, battery enclosures, automotive systems, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Magna","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Valeo',          region: 'eu',     sector: 'motor', prompt: 'Find the latest official news from Valeo website about automotive structures, lightweighting, EV platforms, materials, or sustainability. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Valeo","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
 
-  { company: 'BMW',            region: 'eu',     sector: 'motor',       prompt: 'Find the latest official news from BMW Group website about lightweighting, carbon fiber, battery enclosures, EV platforms, sustainable materials, or structural innovation. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"BMW Group","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Mercedes-Benz',  region: 'eu',     sector: 'motor',       prompt: 'Find the latest official news from Mercedes-Benz website about lightweighting, advanced materials, composites, EV architecture, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Mercedes-Benz","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Volkswagen',     region: 'eu',     sector: 'motor',       prompt: 'Find the latest official news from Volkswagen website about lightweighting, composites, battery systems, EV platforms, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Volkswagen Group","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Stellantis',     region: 'eu',     sector: 'motor',       prompt: 'Find the latest official news from Stellantis website about lightweighting, composites, EV platforms, sustainable materials, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Stellantis","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Renault',        region: 'eu',     sector: 'motor',       prompt: 'Find the latest official news from Renault Group website about lightweighting, composites, EV architecture, sustainable materials, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Renault Group","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Ford',           region: 'usa',    sector: 'motor',       prompt: 'Find the latest official news from Ford website about lightweighting, advanced materials, battery enclosures, composites, trucks, or EV platforms. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Ford","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'GM',             region: 'usa',    sector: 'motor',       prompt: 'Find the latest official news from General Motors website about lightweighting, composites, battery enclosures, structural innovation, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"GM","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Tesla',          region: 'usa',    sector: 'motor',       prompt: 'Find the latest official news from Tesla website about structural battery packs, lightweighting, manufacturing, materials, or vehicle architecture. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Tesla","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'BYD',            region: 'china',  sector: 'motor',       prompt: 'Find the latest official news from BYD website about lightweighting, EV architecture, materials, structural innovation, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"BYD","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'BMW',            region: 'eu',     sector: 'motor', prompt: 'Find the latest official news from BMW Group website about lightweighting, carbon fiber, battery enclosures, EV platforms, sustainable materials, or structural innovation. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"BMW Group","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Mercedes-Benz',  region: 'eu',     sector: 'motor', prompt: 'Find the latest official news from Mercedes-Benz website about lightweighting, advanced materials, composites, EV architecture, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Mercedes-Benz","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Volkswagen',     region: 'eu',     sector: 'motor', prompt: 'Find the latest official news from Volkswagen website about lightweighting, composites, battery systems, EV platforms, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Volkswagen Group","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Stellantis',     region: 'eu',     sector: 'motor', prompt: 'Find the latest official news from Stellantis website about lightweighting, composites, EV platforms, sustainable materials, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Stellantis","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Renault',        region: 'eu',     sector: 'motor', prompt: 'Find the latest official news from Renault Group website about lightweighting, composites, EV architecture, sustainable materials, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Renault Group","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Ford',           region: 'usa',    sector: 'motor', prompt: 'Find the latest official news from Ford website about lightweighting, advanced materials, battery enclosures, composites, trucks, or EV platforms. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Ford","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'GM',             region: 'usa',    sector: 'motor', prompt: 'Find the latest official news from General Motors website about lightweighting, composites, battery enclosures, structural innovation, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"GM","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Tesla',          region: 'usa',    sector: 'motor', prompt: 'Find the latest official news from Tesla website about structural battery packs, lightweighting, manufacturing, materials, or vehicle architecture. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Tesla","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'BYD',            region: 'china',  sector: 'motor', prompt: 'Find the latest official news from BYD website about lightweighting, EV architecture, materials, structural innovation, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"BYD","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
 
-  { company: 'Airbus',         region: 'eu',     sector: 'aerospace',   prompt: 'Find the latest official news from Airbus website about composites, aerostructures, lightweighting, advanced materials, hydrogen tanks, or aerospace manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Airbus","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Boeing',         region: 'usa',    sector: 'aerospace',   prompt: 'Find the latest official news from Boeing website about composites, aerostructures, advanced materials, manufacturing, or aircraft structures. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Boeing","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
-  { company: 'Safran',         region: 'eu',     sector: 'aerospace',   prompt: 'Find the latest official news from Safran website about aerospace materials, composites, lightweight structures, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Safran","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Airbus',         region: 'eu',     sector: 'aerospace', prompt: 'Find the latest official news from Airbus website about composites, aerostructures, lightweighting, advanced materials, or aerospace manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Airbus","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Boeing',         region: 'usa',    sector: 'aerospace', prompt: 'Find the latest official news from Boeing website about composites, aerostructures, advanced materials, manufacturing, or aircraft structures. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Boeing","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
+  { company: 'Safran',         region: 'eu',     sector: 'aerospace', prompt: 'Find the latest official news from Safran website about aerospace materials, composites, lightweight structures, or manufacturing. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"1-2 sentence factual summary","source":"Safran","url":"https://...","date":"YYYY-MM-DD"}]. Return up to 4 items.' },
 ];
 
 const AI_PROMPTS = [
@@ -147,6 +145,139 @@ const AI_PROMPTS = [
   },
 ];
 
+const SECTOR_RULES = [
+  { sector: 'motor', words: [
+    'automotive','vehicle','car','ev','electric vehicle','motorsport','formula',
+    'bmw','ferrari','mercedes','audi','toyota','volkswagen','ford','gm','tesla',
+    'stellantis','renault','porsche','mclaren','lamborghini','rivian','lucid',
+    'byd','xpeng','nio','geely','forvia','magna','valeo','bosch','continental',
+    'chassis','lightweighting','van','truck','body panel','battery enclosure',
+    'cross-car beam','interior structure','seat structure','door module',
+    'automotive market','vehicle production','oem','tier 1','tier-one supplier'
+  ]},
+  { sector: 'aerospace', words: [
+    'aerospace','aircraft','airbus','boeing','aviation','satellite','uav','drone',
+    'space','fuselage','wing','rocket','evtol','helicopter','propeller','nacelle',
+    'easa','faa'
+  ]},
+  { sector: 'recycling', words: [
+    'recycl','reclaim','end-of-life','circular','bio-based','sustainable',
+    'degradation','reuse','reprocess','closed-loop','hemp','flax','natural fiber',
+    'natural fibre','wind blade'
+  ]},
+  { sector: 'construction', words: [
+    'construction','bridge','infrastructure','rebar','wind turbine','blade',
+    'building','structural','concrete','civil','offshore','marine',
+    'pipeline','rail','railway','energy'
+  ]},
+  { sector: 'materials', words: [
+    'carbon fiber','carbon fibre','cfrp','prepreg','epoxy','resin','thermoplastic',
+    'autoclave','infusion','pultrusion','filament winding','precursor','tensile',
+    'modulus','composite material'
+  ]},
+];
+
+const REGION_RULES = [
+  { region: 'china', words: ['china','chinese','beijing','shanghai','guangzhou','shenzhen','zhongfu','jinggong','dreame','xpeng','govy','mingyang','zhihang','cgtn','sinopec'] },
+  { region: 'eu',    words: ['europe','european','germany','german','france','french','italy','italian','uk','british','airbus','daher','bmw','volkswagen','audi','jec world','eucia'] },
+  { region: 'usa',   words: ['usa','united states','american','boeing','joby','hexcel','cytec','nasa','lockheed','northrop','california','michigan','faa'] },
+];
+
+const COMPANY_RULES = [
+  'airbus', 'boeing', 'toray', 'hexcel', 'solvay', 'syensqo', 'teijin',
+  'sgl carbon', 'mitsubishi chemical', 'owens corning', 'fairmat',
+  'gen 2 carbon', 'carbon conversions', 'bcomp', 'safran', 'daher', 'gkn',
+  'zhongfu shenying', 'jinggong', 'mingyang', 'catack-h', 'posco',
+
+  'forvia', 'magna', 'plastic omnium', 'brose', 'adient', 'lear', 'aptiv',
+  'valeo', 'bosch', 'continental', 'zf', 'zf friedrichshafen', 'faurecia',
+  'yanfeng', 'denso', 'aisin',
+
+  'bmw', 'mercedes', 'mercedes-benz', 'audi', 'volkswagen', 'vw',
+  'porsche', 'lamborghini', 'ferrari', 'stellantis', 'renault',
+  'peugeot', 'citroen', 'opel', 'seat', 'skoda', 'cupra',
+  'jaguar land rover', 'jlr', 'aston martin', 'mclaren', 'volvo',
+
+  'ford', 'general motors', 'gm', 'chevrolet', 'cadillac', 'gmc',
+  'tesla', 'rivian', 'lucid', 'jeep', 'ram',
+
+  'byd', 'xpeng', 'nio', 'geely', 'saic', 'chery', 'gac',
+  'toyota', 'honda', 'nissan', 'mazda', 'subaru', 'hyundai', 'kia',
+
+  'joby', 'volocopter', 'eviation', 'northrop', 'lockheed', 'nasa'
+];
+
+const SIGNAL_RULES = [
+  { signal: 'capacity_expansion', words: ['new plant','capacity expansion','expands production','new facility','production line','mass production','ramp-up','manufacturing base','capacity increase'] },
+  { signal: 'partnership',        words: ['partnership','collaboration','agreement','signed with','works with','joint development','alliance','cooperate','collaborate'] },
+  { signal: 'new_product',        words: ['launches','introduced','introduces','unveils','new product','new material','new grade','debuts','showcases'] },
+  { signal: 'recycling',          words: ['recycling','recycled carbon fiber','reclaimed','end-of-life','closed-loop','circular','recyclable','reuse','recovered carbon fiber'] },
+  { signal: 'oem_adoption',       words: ['selected by','adopted by','supplies','nominated by','awarded contract','qualified by','chosen for','integrated into'] },
+  { signal: 'investment',         words: ['invests','investment','funding','raises','backed by','venture','acquisition','merger','stake','capital injection'] },
+  { signal: 'regulation',         words: ['certification','qualified','approved','regulation','compliance','standard','ce marking','certified','rule change'] },
+  { signal: 'market_report',      words: ['market size','forecast','cagr','market report','industry report','analysis and forecast','market outlook','valued at usd'] },
+  { signal: 'technology',         words: ['breakthrough','innovation','demonstrator','prototype','process development','thermoplastic composite','novel process','advanced manufacturing'] },
+];
+
+const HRC_PRIORITY_KEYWORDS = [
+  'carbon fiber', 'carbon fibre', 'cfrp', 'recycled carbon fiber', 'recycled carbon fibre',
+  'automotive lightweighting', 'aerospace composite',
+  'thermoplastic composite', 'battery enclosure', 'composite blade', 'pultrusion',
+  'filament winding', 'prepreg', 'structural composite', 'rtm', 'resin transfer molding',
+  'out-of-autoclave', 'autoclave', 'carbon fiber recycling'
+];
+
+const MARKET_CONTEXT_KEYWORDS = [
+  'europe automotive market',
+  'european automotive market',
+  'eu automotive market',
+  'us automotive market',
+  'u.s. automotive market',
+  'north america automotive market',
+  'auto market europe',
+  'auto market us',
+  'vehicle production europe',
+  'vehicle production usa',
+  'automotive demand europe',
+  'automotive demand us',
+  'lightweighting market',
+  'automotive composites market',
+  'composite body panels',
+  'battery enclosure',
+  'structural battery pack',
+  'ev platform',
+  'vehicle architecture'
+];
+
+const COMPOSITES_KEYWORDS = [
+  'composite','carbon fiber','carbon fibre','cfrp','prepreg','epoxy resin',
+  'glass fiber','glass fibre','gfrp','thermoplastic composite','thermoset',
+  'resin transfer','filament winding','autoclave','pultrusion','infusion',
+  'natural fiber composite','natural fibre composite','bio-composite',
+  'hemp fiber','hemp fibre','flax fiber','flax fibre','basalt fiber','basalt fibre',
+  'aramid','kevlar','carbon nanotube','nanocomposite','carbon reinforced',
+  'fiber reinforced','fibre reinforced','sandwich panel','honeycomb core',
+  'woven fabric','ud tape','unidirectional tape','dry fiber placement',
+  'dry fibre placement','afp ','atl ','toray','hexcel','solvay','syensqo',
+  'teijin','sgl carbon','cytec','chomarat','owens corning','jec world',
+  'jeccomposites','compositesworld','eucia','acma','sampe','iacmi',
+  'reinforced plastic','composite fuselage','composite wing',
+  'composite aerostructure','composite blade','composite propeller',
+  'cfrp aircraft','composite uav','cfrp chassis','carbon fiber car',
+  'carbon fibre car','composite body panel','composite ev','wind turbine blade',
+  'recyclable blade','wind blade','composite pipe','composite tank',
+  'frp rebar','composite rebar','frp bridge','gfrp bridge',
+  'fiber reinforced concrete','fibre reinforced concrete','frp profile',
+  'recycled carbon fiber','recycled carbon fibre','carbon fiber recycl',
+  'carbon fibre recycl','composite recycl','frp recycl','end-of-life composite',
+  'pyrolysis carbon','composites market','carbon fiber market',
+  'carbon fibre market','composite material','composites industry',
+  'composite manufacturer','composite supplier','advanced material',
+  'lightweight material','structural composite','matrix resin','fiber volume',
+  'fibre volume','void content','delamination','out-of-autoclave','oa curing',
+  'resin infusion','liquid molding','liquid moulding'
+];
+
 const SOURCE_PRIORITY = {
   'JEC Group': 3,
   'CompositesWorld': 3,
@@ -160,8 +291,6 @@ const SOURCE_PRIORITY = {
   'Aviation Business News': 2,
   'eMobility Engineering': 2,
   'Energy Global': 2,
-  'H2 View': 2,
-  'Hydrogen Insight': 2,
   'Hexcel': 3,
   'Syensqo': 3,
   'SGL Carbon': 3,
@@ -304,14 +433,14 @@ function isCompositeRelevant(title, summary) {
     text.includes('lightweighting') ||
     text.includes('battery enclosure') ||
     text.includes('body panel') ||
-    text.includes('hydrogen tank') ||
-    text.includes('pressure vessel') ||
     text.includes('structural component') ||
     text.includes('interior structure') ||
     text.includes('aerostructure') ||
     text.includes('cross-car beam') ||
     text.includes('door module') ||
-    text.includes('seat structure');
+    text.includes('seat structure') ||
+    text.includes('vehicle architecture') ||
+    text.includes('ev platform');
 
   return hasCompositeKeyword || hasPriorityKeyword || (hasImportantCompany && hasApplicationContext);
 }
@@ -393,7 +522,7 @@ function buildWhyItMatters(article) {
     parts.push('Relevant to high-performance structural composites demand.');
   }
   if (article.sector === 'construction') {
-    parts.push('Relevant to infrastructure, energy, or pressure-vessel composite applications.');
+    parts.push('Relevant to infrastructure, energy, or structural composite applications.');
   }
 
   if (
@@ -430,7 +559,7 @@ function buildImplication(article) {
     return 'Useful benchmark for automotive lightweighting, Tier 1 activity, and OEM application trends.';
   }
   if (article.sector === 'construction') {
-    return 'Useful for monitoring composite infrastructure, hydrogen, and energy application trends.';
+    return 'Useful for monitoring composite infrastructure and energy application trends.';
   }
   return 'General market monitoring value.';
 }
@@ -645,7 +774,11 @@ module.exports = async function handler(req, res) {
     articles = articles.filter(a => a.url && a.title && a.title.length > 10);
 
     articles = articles.filter(a =>
-      isCompositeRelevant(a.title, a.summary) &&
+      (
+        isCompositeRelevant(a.title, a.summary) ||
+        a.hrcRelevance === 'high' ||
+        (a.sourceType === 'company' && a.hrcRelevance !== 'low')
+      ) &&
       !(a.isMarketReportSpam && a.hrcRelevance === 'low')
     );
 
@@ -699,6 +832,19 @@ module.exports = async function handler(req, res) {
       perSource[s] = (perSource[s] || 0) + 1;
       return perSource[s] <= cap;
     });
+
+    if (!articles.length) {
+      const fallback = [
+        ...mediaRssResults.flat(),
+        ...companyRssResults.flat(),
+        ...aiResults.flat(),
+        ...companyAiResults.flat()
+      ]
+        .filter(a => a.url && a.title && a.title.length > 10)
+        .slice(0, 40);
+
+      articles = fallback;
+    }
 
     console.log(`[HRC] Before dedup: ${beforeDedup}, after dedup/source-cap: ${articles.length}, removed: ${beforeDedup - articles.length}`);
 
