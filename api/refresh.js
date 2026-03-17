@@ -1,12 +1,13 @@
 // HRC Composites Hub — api/refresh.js
-// Improved version:
-// - broader relevance logic
+// Updated version:
+// - improved HRC-specific relevance model
 // - source diversity cap
 // - source priority scoring
 // - company newsroom support
 // - media vs company sourceType
 // - OEM / Tier-1 / market-context handling
 // - hydrogen / pressure-vessel keywords removed
+// - stronger HRC-specific "why relevant" logic
 
 const RSS_FEEDS = [
   // ── AEROSPACE ──
@@ -51,9 +52,6 @@ const RSS_FEEDS = [
   { url: 'https://www.engineerlive.com/rss.xml',                       source: 'Engineer Live',              region: 'eu',     sector: 'materials', sourceType: 'media' },
   { url: 'https://interestingengineering.com/feed',                    source: 'Interesting Engineering',    region: 'global', sector: 'materials', sourceType: 'media' },
   { url: 'https://www.emobility-engineering.com/feed/',                source: 'eMobility Engineering',      region: 'eu',     sector: 'motor', sourceType: 'media' },
-  { url: 'https://www.h2-view.com/news/all-news/feed/',                source: 'H2 View',                    region: 'global', sector: 'construction', sourceType: 'media' },
-  { url: 'https://www.hydrogeninsight.com/feed',                       source: 'Hydrogen Insight',           region: 'global', sector: 'construction', sourceType: 'media' },
-  { url: 'https://hydrogen-central.com/feed/',                         source: 'Hydrogen Central',           region: 'global', sector: 'construction', sourceType: 'media' },
 
   // ── MATERIALS ──
   { url: 'https://www.azom.com/rss-feed.xml',                          source: 'AZO Materials',              region: 'global', sector: 'materials', sourceType: 'media' },
@@ -69,35 +67,10 @@ const RSS_FEEDS = [
   { url: 'https://www.energyglobal.com/news/feed/',                    source: 'Energy Global',              region: 'global', sector: 'construction', sourceType: 'media' },
 ];
 
-// Add real newsroom RSS feeds here when you have them.
+// Add real newsroom RSS feeds here when available.
 const COMPANY_FEEDS = [
-  // Materials / composites
-  // { url: '...', source: 'Hexcel', region: 'usa', sector: 'materials', company: 'Hexcel', sourceType: 'company' },
-  // { url: '...', source: 'Syensqo', region: 'eu', sector: 'materials', company: 'Syensqo', sourceType: 'company' },
-  // { url: '...', source: 'SGL Carbon', region: 'eu', sector: 'materials', company: 'SGL Carbon', sourceType: 'company' },
-  // { url: '...', source: 'Teijin', region: 'global', sector: 'materials', company: 'Teijin', sourceType: 'company' },
-  // { url: '...', source: 'Toray', region: 'global', sector: 'materials', company: 'Toray', sourceType: 'company' },
-
-  // Tier 1 suppliers
-  // { url: '...', source: 'Forvia', region: 'eu', sector: 'motor', company: 'Forvia', sourceType: 'company' },
-  // { url: '...', source: 'Magna', region: 'usa', sector: 'motor', company: 'Magna', sourceType: 'company' },
-  // { url: '...', source: 'Valeo', region: 'eu', sector: 'motor', company: 'Valeo', sourceType: 'company' },
-
-  // OEMs
-  // { url: '...', source: 'BMW Group', region: 'eu', sector: 'motor', company: 'BMW', sourceType: 'company' },
-  // { url: '...', source: 'Mercedes-Benz', region: 'eu', sector: 'motor', company: 'Mercedes-Benz', sourceType: 'company' },
-  // { url: '...', source: 'Volkswagen Group', region: 'eu', sector: 'motor', company: 'Volkswagen', sourceType: 'company' },
-  // { url: '...', source: 'Stellantis', region: 'eu', sector: 'motor', company: 'Stellantis', sourceType: 'company' },
-  // { url: '...', source: 'Renault Group', region: 'eu', sector: 'motor', company: 'Renault', sourceType: 'company' },
-  // { url: '...', source: 'Ford', region: 'usa', sector: 'motor', company: 'Ford', sourceType: 'company' },
-  // { url: '...', source: 'GM', region: 'usa', sector: 'motor', company: 'General Motors', sourceType: 'company' },
-  // { url: '...', source: 'Tesla', region: 'usa', sector: 'motor', company: 'Tesla', sourceType: 'company' },
-  // { url: '...', source: 'BYD', region: 'china', sector: 'motor', company: 'BYD', sourceType: 'company' },
-
-  // Aerospace
-  // { url: '...', source: 'Airbus', region: 'eu', sector: 'aerospace', company: 'Airbus', sourceType: 'company' },
-  // { url: '...', source: 'Boeing', region: 'usa', sector: 'aerospace', company: 'Boeing', sourceType: 'company' },
-  // { url: '...', source: 'Safran', region: 'eu', sector: 'aerospace', company: 'Safran', sourceType: 'company' },
+  // Example:
+  // { url: 'https://www.hexcel.com/News/News-Archives/rss', source: 'Hexcel', region: 'usa', sector: 'materials', company: 'Hexcel', sourceType: 'company' },
 ];
 
 const COMPANY_AI_PROMPTS = [
@@ -324,6 +297,15 @@ const MEDIA_SOURCE_CAP = 6;
 const COMPANY_SOURCE_CAP = 3;
 const FINAL_LIMIT = 220;
 
+const HRC_COMPETITORS = [
+  'Hexcel', 'Syensqo', 'SGL Carbon', 'Teijin', 'Toray', 'Forvia', 'Magna', 'Valeo'
+];
+
+const HRC_CUSTOMER_SIGNALS = [
+  'Airbus', 'Boeing', 'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen', 'Stellantis',
+  'Renault', 'Ford', 'General Motors', 'GM', 'Tesla', 'BYD', 'Safran'
+];
+
 function categSector(title, desc) {
   const t = (title + ' ' + (desc || '')).toLowerCase();
   for (const r of SECTOR_RULES) {
@@ -445,6 +427,22 @@ function isCompositeRelevant(title, summary) {
   return hasCompositeKeyword || hasPriorityKeyword || (hasImportantCompany && hasApplicationContext);
 }
 
+function inferHrcTheme(article) {
+  const text = (article.title + ' ' + (article.summary || '')).toLowerCase();
+  const companies = article.companies || [];
+
+  if (companies.some(c => HRC_COMPETITORS.includes(c))) return 'competitive';
+  if (companies.some(c => HRC_CUSTOMER_SIGNALS.includes(c))) return 'customer_signal';
+  if (article.signal === 'partnership') return 'partnership';
+  if (article.signal === 'capacity_expansion') return 'capacity';
+  if (article.signal === 'recycling') return 'recycling';
+  if (article.signal === 'technology') return 'technology';
+  if (text.includes('battery enclosure') || text.includes('vehicle architecture') || text.includes('lightweighting')) return 'automotive_application';
+  if (text.includes('aerostructure') || text.includes('aircraft') || text.includes('fuselage') || text.includes('wing')) return 'aerospace_application';
+  if (text.includes('automotive market') || text.includes('vehicle production')) return 'market_demand';
+  return 'general';
+}
+
 function scoreHRCRelevance(article) {
   let score = 0;
   const text = (article.title + ' ' + (article.summary || '')).toLowerCase();
@@ -468,7 +466,12 @@ function scoreHRCRelevance(article) {
     companiesText.includes('tesla') ||
     companiesText.includes('stellantis') ||
     companiesText.includes('renault') ||
-    companiesText.includes('byd')
+    companiesText.includes('byd') ||
+    companiesText.includes('airbus') ||
+    companiesText.includes('boeing') ||
+    companiesText.includes('hexcel') ||
+    companiesText.includes('toray') ||
+    companiesText.includes('syensqo')
   ) score += 2;
 
   if (
@@ -487,7 +490,11 @@ function scoreHRCRelevance(article) {
   if (MARKET_CONTEXT_KEYWORDS.some(k => text.includes(k))) score += 1;
   if (isMarketReportSpam(article.title, article.summary)) score -= 3;
 
-  if (score >= 7) return 'high';
+  const theme = inferHrcTheme(article);
+  if (theme === 'competitive' || theme === 'customer_signal') score += 2;
+  if (theme === 'automotive_application' || theme === 'aerospace_application') score += 1;
+
+  if (score >= 8) return 'high';
   if (score >= 4) return 'medium';
   return 'low';
 }
@@ -495,20 +502,24 @@ function scoreHRCRelevance(article) {
 function buildWhyItMatters(article) {
   const parts = [];
   const text = (article.title + ' ' + (article.summary || '')).toLowerCase();
+  const theme = article.hrcTheme || 'general';
 
-  if (article.signal === 'partnership') {
+  if (theme === 'competitive') {
+    parts.push('This is relevant because it involves a company HRC may benchmark against or compete with.');
+  }
+  if (theme === 'customer_signal') {
+    parts.push('This is relevant because it may indicate demand direction or application interest from an OEM or aerospace customer.');
+  }
+  if (theme === 'partnership') {
     parts.push('Signals active collaboration in the composites value chain.');
   }
-  if (article.signal === 'capacity_expansion') {
-    parts.push('Suggests supply-side growth or stronger regional demand.');
+  if (theme === 'capacity') {
+    parts.push('Suggests supply-side growth, localization, or stronger regional demand.');
   }
-  if (article.signal === 'oem_adoption') {
-    parts.push('Indicates real downstream adoption rather than only technical interest.');
+  if (theme === 'recycling') {
+    parts.push('Supports the growing importance of circular composites and recycled carbon fiber ecosystems.');
   }
-  if (article.signal === 'recycling') {
-    parts.push('Supports the growing importance of circular composites and rCF ecosystems.');
-  }
-  if (article.signal === 'technology') {
+  if (theme === 'technology') {
     parts.push('Highlights technical progress that may affect future performance or manufacturing benchmarks.');
   }
   if (article.sourceType === 'company') {
@@ -516,10 +527,10 @@ function buildWhyItMatters(article) {
   }
 
   if (article.sector === 'motor') {
-    parts.push('Relevant to lightweighting, EV platforms, and automotive composite applications.');
+    parts.push('Relevant to lightweighting, EV platforms, Tier-1 supply, and automotive composite applications.');
   }
   if (article.sector === 'aerospace') {
-    parts.push('Relevant to high-performance structural composites demand.');
+    parts.push('Relevant to high-performance structural composites demand and aerospace qualification direction.');
   }
   if (article.sector === 'construction') {
     parts.push('Relevant to infrastructure, energy, or structural composite applications.');
@@ -543,6 +554,14 @@ function buildWhyItMatters(article) {
 }
 
 function buildImplication(article) {
+  const theme = article.hrcTheme || 'general';
+
+  if (theme === 'competitive') {
+    return 'Track as a competitor benchmark or capability signal.';
+  }
+  if (theme === 'customer_signal') {
+    return 'Track as a potential customer demand or application-direction signal.';
+  }
   if (article.hrcRelevance === 'high' && article.signal === 'partnership') {
     return 'Potential partnership or competitive positioning signal for HRC.';
   }
@@ -556,7 +575,7 @@ function buildImplication(article) {
     return 'Useful benchmark for aerospace composites demand and qualification direction.';
   }
   if (article.sector === 'motor') {
-    return 'Useful benchmark for automotive lightweighting, Tier 1 activity, and OEM application trends.';
+    return 'Useful benchmark for automotive lightweighting, Tier-1 activity, and OEM application trends.';
   }
   if (article.sector === 'construction') {
     return 'Useful for monitoring composite infrastructure and energy application trends.';
@@ -573,6 +592,7 @@ function enrichArticle(article) {
   enriched.signal = detectSignal(enriched.title, enriched.summary);
   enriched.keywords = extractKeywords(enriched.title, enriched.summary);
   enriched.isMarketReportSpam = isMarketReportSpam(enriched.title, enriched.summary);
+  enriched.hrcTheme = inferHrcTheme(enriched);
   enriched.hrcRelevance = scoreHRCRelevance(enriched);
   enriched.whyItMatters = buildWhyItMatters(enriched);
   enriched.implication = buildImplication(enriched);
@@ -820,6 +840,7 @@ module.exports = async function handler(req, res) {
       const rel = { high: 3, medium: 2, low: 1 };
       const sa = SOURCE_PRIORITY[a.source] || 1;
       const sb = SOURCE_PRIORITY[b.source] || 1;
+
       return (rel[b.hrcRelevance] || 0) - (rel[a.hrcRelevance] || 0)
         || sb - sa
         || new Date(b.date) - new Date(a.date);
@@ -845,8 +866,6 @@ module.exports = async function handler(req, res) {
 
       articles = fallback;
     }
-
-    console.log(`[HRC] Before dedup: ${beforeDedup}, after dedup/source-cap: ${articles.length}, removed: ${beforeDedup - articles.length}`);
 
     articles = articles.slice(0, FINAL_LIMIT);
 
@@ -884,6 +903,13 @@ module.exports = async function handler(req, res) {
       return acc;
     }, {});
 
+    const themeCounts = articles.reduce((acc, a) => {
+      acc[a.hrcTheme] = (acc[a.hrcTheme] || 0) + 1;
+      return acc;
+    }, {});
+
+    console.log(`[HRC] Count after filters: ${articles.length}`);
+
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -906,6 +932,7 @@ module.exports = async function handler(req, res) {
         sectorCounts,
         sourceCounts,
         sourceTypeCounts,
+        themeCounts,
       },
     });
   } catch (err) {
