@@ -30,6 +30,112 @@ const RSS_FEEDS = [
   { url: 'https://www.h2-view.com/news/all-news/feed/',          source: 'H2 View',                region: 'global', sector: 'construction' },
 ];
 
+// ── OEM TRACKING ─────────────────────────────────────────────────────────────
+const OEMS = [
+  // Aerospace
+  'Airbus','Boeing','COMAC','Embraer',
+  // Hypercars / Supercars
+  'McLaren','Ferrari','Lamborghini','Bugatti','Pagani','Koenigsegg',
+  'Aston Martin','Maserati','Rimac','Pininfarina','Lotus','Dallara',
+  'Czinger','Zenvo','SSC North America','Hennessey',
+  // Premium performance
+  'Mercedes-AMG','Audi Sport','Alfa Romeo','Lexus',
+  'Toyota Gazoo Racing','Nissan Nismo','Honda NSX',
+  'Cadillac Racing','Polestar','Hyundai N','Jaguar','Range Rover',
+  'Rolls-Royce','Bentley','Alpine Cars','KTM',
+  'Lucid Motors','Tesla','Dodge SRT','Subaru STI','Mitsubishi Ralliart',
+  // eVTOL
+  'Joby Aviation','Lilium','Archer Aviation','Wisk Aero','Volocopter',
+];
+
+// Google News RSS per OEM — free, no key needed
+const OEM_RSS = OEMS.map(o => ({
+  url: `https://news.google.com/rss/search?q=${encodeURIComponent('"' + o + '" composite OR "carbon fiber" OR CFRP OR lightweight')}&hl=en-US&gl=US&ceid=US:en`,
+  source: 'Google News',
+  region: 'global',
+  sector: 'oem',
+  oem: o,
+}));
+
+// Bing queries for OEMs
+const OEM_BING = OEMS.map(o => ({
+  q: `"${o}" carbon fiber composite lightweight programme`,
+  region: 'global',
+  sector: 'oem',
+  oem: o,
+}));
+
+// OpenAI OEM brief
+const OEM_AI_PROMPT = {
+  prompt: `Search for the latest news from the last 7 days about these automotive and aerospace OEMs launching new models, programmes or vehicles that use carbon fiber, CFRP or composite materials: Mercedes-AMG, Audi Sport, Alfa Romeo, Maserati, Lotus, Rimac, Lexus, Toyota Gazoo Racing, Nissan Nismo, Cadillac, Polestar, Hyundai N, Jaguar, Range Rover, Rolls-Royce, Bentley, Alpine, Dallara, KTM, Czinger, Hennessey, Pininfarina, Lucid Motors, Tesla, Dodge SRT, Subaru STI, Joby Aviation, Lilium, Archer Aviation, Airbus, Boeing, COMAC.
+
+Focus on: new model launches, programme announcements, lightweighting targets, composite content, new platforms. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"2 sentence summary of the launch or programme","sector":"oem","source":"publication name","url":"https://...","date":"YYYY-MM-DD","oem":"OEM Name"}]. Return up to 15 items.`,
+};
+
+// ── COMPETITOR TRACKING ───────────────────────────────────────────────────────
+// Key players: Toray, Hexcel, SGL Carbon, Solvay, Teijin, Cytec, Owens Corning,
+// Mitsubishi Chemical, Chomarat, Saertex, Porcher, Hexion
+const COMPETITORS = [
+  'Toray', 'Hexcel', 'SGL Carbon', 'Solvay composites', 'Teijin carbon',
+  'Cytec Industries', 'Owens Corning composites', 'Mitsubishi Chemical carbon',
+  'Chomarat', 'Saertex', 'Porcher Industries', 'Hexion composites',
+];
+
+// ── OEM TRACKING ─────────────────────────────────────────────────────────────
+const OEMS = {
+  aerospace: ['Airbus','Boeing','COMAC','Embraer','Safran','Leonardo','Dassault'],
+  automotive: ['BMW','Mercedes-Benz','Audi','Toyota','Volkswagen','Stellantis','Lamborghini','Ferrari'],
+  evtol: ['Joby Aviation','Lilium','Archer Aviation','Wisk','Vertical Aerospace','EHang','AutoFlight'],
+};
+const ALL_OEMS = [...OEMS.aerospace, ...OEMS.automotive, ...OEMS.evtol];
+
+// Google News RSS per OEM — searching for composite/lightweighting/new programme news
+const OEM_RSS = ALL_OEMS.map(oem => ({
+  url: `https://news.google.com/rss/search?q=${encodeURIComponent('"' + oem + '" composite OR carbon fiber OR lightweight OR CFRP OR programme')}&hl=en-US&gl=US&ceid=US:en`,
+  source: 'Google News',
+  region: OEMS.aerospace.includes(oem) ? 'global' : OEMS.evtol.includes(oem) ? 'global' : 'global',
+  sector: 'oem',
+  oem,
+  oemGroup: OEMS.aerospace.includes(oem) ? 'Aerospace' : OEMS.evtol.includes(oem) ? 'eVTOL' : 'Automotive',
+}));
+
+// OpenAI OEM prompt
+const OEM_AI_PROMPT = `Search for the latest news from these OEMs published in the last 14 days, specifically about: new aircraft/vehicle programmes, composite material content announcements, lightweighting targets, new model launches, supply chain changes, or composite component contracts.
+
+Aerospace OEMs: Airbus, Boeing, COMAC, Embraer, Safran
+Automotive OEMs: BMW, Mercedes-Benz, Audi, Toyota, Volkswagen, Lamborghini, Ferrari
+eVTOL OEMs: Joby Aviation, Lilium, Archer Aviation, Wisk, Vertical Aerospace, EHang
+
+Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"2 sentence summary focused on composite/lightweight relevance","sector":"oem","source":"publication name","url":"https://...","date":"YYYY-MM-DD","oem":"Company Name","oemGroup":"Aerospace|Automotive|eVTOL"}]. Return up to 20 items.`;
+
+// Google News RSS — one feed per competitor (free, no key needed)
+const COMPETITOR_RSS = COMPETITORS.map(c => ({
+  url: `https://news.google.com/rss/search?q=${encodeURIComponent('"' + c + '"')}&hl=en-US&gl=US&ceid=US:en`,
+  source: 'Google News',
+  region: 'global',
+  sector: 'competitor',
+  competitor: c,
+}));
+
+// Bing queries for competitors (if BING_API_KEY set)
+const COMPETITOR_BING = COMPETITORS.map(c => ({
+  q: `"${c}" composites carbon fiber news`,
+  region: 'global',
+  sector: 'competitor',
+  competitor: c,
+}));
+
+// OpenAI competitor brief prompt
+const COMPETITOR_AI_PROMPT = {
+  region: 'global',
+  sector: 'competitor',
+  prompt: `Search for the latest news about these composites industry companies published in the last 7 days: Toray, Hexcel, SGL Carbon, Solvay, Teijin, Cytec, Owens Corning, Mitsubishi Chemical, Chomarat, Saertex.
+
+For each company found, report: new contracts won, capacity expansions, new product launches, partnerships or JVs, executive appointments, financial results, customer wins.
+
+Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"2 sentence factual summary of what this competitor is doing","sector":"competitor","source":"publication name","url":"https://...","date":"YYYY-MM-DD","competitor":"Company Name"}]. Return up to 15 items covering as many different companies as possible.`,
+};
+
 const REDDIT_SEARCHES = [
   { subreddit: 'compositesmanufacturing', region: 'global', sector: 'materials' },
   { subreddit: 'CarbonFiber',             region: 'global', sector: 'materials' },
@@ -247,6 +353,173 @@ async function fetchOpenAI(apiKey, regionPrompt) {
   } catch { return []; }
 }
 
+async function fetchOemRSS(feed) {
+  try {
+    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    return parseRSS(xml, feed.source).map(item => ({
+      title:    item.title,
+      summary:  item.desc,
+      region:   'global',
+      sector:   'oem',
+      oem:      feed.oem,
+      oemGroup: feed.oemGroup,
+      source:   item.source,
+      url:      item.link,
+      date:     item.date ? new Date(item.date).toISOString() : new Date().toISOString(),
+      via:      'rss',
+    }));
+  } catch { return []; }
+}
+
+async function fetchOemAI(apiKey) {
+  try {
+    const res = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({ model: 'gpt-4o-mini', tools: [{ type: 'web_search_preview' }], input: OEM_AI_PROMPT }),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const text = (data.output || []).filter(b => b.type === 'message').flatMap(b => b.content || []).filter(c => c.type === 'output_text').map(c => c.text).join('');
+    const match = text.replace(/```json|```/g, '').trim().match(/\[[\s\S]*\]/);
+    if (!match) return [];
+    return JSON.parse(match[0]).map(a => ({
+      title:    a.title || '',
+      summary:  a.summary || '',
+      region:   'global',
+      sector:   'oem',
+      oem:      a.oem || '',
+      oemGroup: a.oemGroup || 'Other',
+      source:   a.source || 'OpenAI Search',
+      url:      a.url || '',
+      date:     a.date ? new Date(a.date).toISOString() : new Date().toISOString(),
+      via:      'ai',
+    }));
+  } catch { return []; }
+}
+
+async function fetchOemRSS(feed) {
+  try {
+    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    return parseRSS(xml, feed.source).map(item => ({
+      title: item.title, summary: item.desc,
+      region: categRegion(item.title, item.desc, 'global'),
+      sector: 'oem', oem: feed.oem,
+      source: item.source, url: item.link,
+      date: item.date ? new Date(item.date).toISOString() : new Date().toISOString(),
+      via: 'rss',
+    }));
+  } catch { return []; }
+}
+
+async function fetchOemBing(query, apiKey) {
+  try {
+    const url = `https://api.bing.microsoft.com/v7.0/news/search?q=${encodeURIComponent(query.q)}&freshness=Week&count=3&mkt=en-US&sortBy=Date`;
+    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.value || []).map(item => ({
+      title: stripHtml(item.name || ''), summary: stripHtml(item.description || '').slice(0, 280),
+      region: categRegion(item.name, item.description, 'global'),
+      sector: 'oem', oem: query.oem,
+      source: item.provider?.[0]?.name || 'Bing News',
+      url: item.url || '', date: item.datePublished || new Date().toISOString(),
+      via: 'bing',
+    }));
+  } catch { return []; }
+}
+
+async function fetchOemAI(apiKey) {
+  try {
+    const res = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({ model: 'gpt-4o-mini', tools: [{ type: 'web_search_preview' }], input: OEM_AI_PROMPT.prompt }),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const text = (data.output || []).filter(b => b.type === 'message').flatMap(b => b.content || []).filter(c => c.type === 'output_text').map(c => c.text).join('');
+    const match = text.replace(/```json|```/g,'').trim().match(/\[[\s\S]*\]/);
+    if (!match) return [];
+    return JSON.parse(match[0]).map(a => ({
+      title: a.title || '', summary: a.summary || '',
+      region: 'global', sector: 'oem', oem: a.oem || '',
+      source: a.source || 'OpenAI Search', url: a.url || '',
+      date: a.date ? new Date(a.date).toISOString() : new Date().toISOString(),
+      via: 'ai',
+    }));
+  } catch { return []; }
+}
+
+async function fetchCompetitorRSS(feed) {
+  try {
+    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    return parseRSS(xml, feed.source).map(item => ({
+      title:      item.title,
+      summary:    item.desc,
+      region:     categRegion(item.title, item.desc, 'global'),
+      sector:     'competitor',
+      competitor: feed.competitor,
+      source:     item.source,
+      url:        item.link,
+      date:       item.date ? new Date(item.date).toISOString() : new Date().toISOString(),
+      via:        'rss',
+    }));
+  } catch { return []; }
+}
+
+async function fetchCompetitorBing(query, apiKey) {
+  try {
+    const url = `https://api.bing.microsoft.com/v7.0/news/search?q=${encodeURIComponent(query.q)}&freshness=Week&count=3&mkt=en-US&sortBy=Date`;
+    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.value || []).map(item => ({
+      title:      stripHtml(item.name || ''),
+      summary:    stripHtml(item.description || '').slice(0, 280),
+      region:     categRegion(item.name, item.description, 'global'),
+      sector:     'competitor',
+      competitor: query.competitor,
+      source:     item.provider?.[0]?.name || 'Bing News',
+      url:        item.url || '',
+      date:       item.datePublished || new Date().toISOString(),
+      via:        'bing',
+    }));
+  } catch { return []; }
+}
+
+async function fetchCompetitorAI(apiKey) {
+  try {
+    const res = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({ model: 'gpt-4o-mini', tools: [{ type: 'web_search_preview' }], input: COMPETITOR_AI_PROMPT.prompt }),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const text = (data.output || []).filter(b => b.type === 'message').flatMap(b => b.content || []).filter(c => c.type === 'output_text').map(c => c.text).join('');
+    const match = text.replace(/```json|```/g, '').trim().match(/\[[\s\S]*\]/);
+    if (!match) return [];
+    return JSON.parse(match[0]).map(a => ({
+      title:      a.title || '',
+      summary:    a.summary || '',
+      region:     'global',
+      sector:     'competitor',
+      competitor: a.competitor || '',
+      source:     a.source || 'OpenAI Search',
+      url:        a.url || '',
+      date:       a.date ? new Date(a.date).toISOString() : new Date().toISOString(),
+      via:        'ai',
+    }));
+  } catch { return []; }
+}
+
 module.exports = async function handler(req, res) {
   try {
     const openaiKey = process.env.OPENAI_API_KEY;
@@ -254,18 +527,73 @@ module.exports = async function handler(req, res) {
     const googleCse = process.env.GOOGLE_CSE_ID;
     const bingKey   = process.env.BING_API_KEY;
 
-    const [rssR, redditR, googleR, bingR, aiR] = await Promise.all([
+    const [rssR, redditR, googleR, bingR, aiR, compRssR, compBingR, compAiR, oemRssR, oemAiR] = await Promise.all([
       Promise.all(RSS_FEEDS.map(fetchRSS)),
       Promise.all(REDDIT_SEARCHES.map(fetchReddit)),
       (googleKey && googleCse) ? Promise.all(GOOGLE_QUERIES.map(q => fetchGoogle(q, googleKey, googleCse))) : Promise.resolve([]),
       bingKey   ? Promise.all(BING_QUERIES.map(q  => fetchBing(q, bingKey))) : Promise.resolve([]),
       openaiKey ? Promise.all(AI_PROMPTS.map(p    => fetchOpenAI(openaiKey, p))) : Promise.resolve([]),
+      Promise.all(COMPETITOR_RSS.map(fetchCompetitorRSS)),
+      bingKey   ? Promise.all(COMPETITOR_BING.map(q => fetchCompetitorBing(q, bingKey))) : Promise.resolve([]),
+      openaiKey ? fetchCompetitorAI(openaiKey) : Promise.resolve([]),
+      Promise.all(OEM_RSS.map(fetchOemRSS)),
+      openaiKey ? fetchOemAI(openaiKey) : Promise.resolve([]),
     ]);
 
     let articles = [...rssR.flat(), ...redditR.flat(), ...googleR.flat(), ...bingR.flat(), ...aiR.flat()];
+    let competitors = [...compRssR.flat(), ...compBingR.flat(), ...(Array.isArray(compAiR) ? compAiR : [compAiR].flat())];
+    let oems = [...oemRssR.flat(), ...(Array.isArray(oemAiR) ? oemAiR : [oemAiR].flat())];
+
+    // Deduplicate OEMs
+    oems = oems.filter(a => a.url && a.title && a.title.length > 10);
+    // Only keep OEM articles that mention composites or lightweight
+    const oemKeywords = ['composite','carbon fiber','carbon fibre','cfrp','lightweight','lightweighting','prepreg','structure','aerostructure','fuselage','wing','body panel','chassis','programme','program','launch','new model','evtol','electric'];
+    oems = oems.filter(a => oemKeywords.some(kw => (a.title + ' ' + (a.summary||'')).toLowerCase().includes(kw)));
+    const oemSeenUrls = new Set(), oemSeenTitles = new Set();
+    oems = oems.filter(a => {
+      const cu = cleanUrl(a.url);
+      const nt = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0,60);
+      if (cu && oemSeenUrls.has(cu))  return false;
+      if (oemSeenTitles.has(nt))      return false;
+      if (cu) oemSeenUrls.add(cu);
+      oemSeenTitles.add(nt);
+      return true;
+    });
+    oems.sort((a, b) => new Date(b.date) - new Date(a.date));
+    oems = oems.slice(0, 80);
 
     articles = articles.filter(a => a.url && a.title && a.title.length > 10);
     articles = articles.filter(a => isRelevant(a.title, a.summary));
+
+    // Deduplicate competitors separately
+    competitors = competitors.filter(a => a.url && a.title && a.title.length > 10);
+    const compSeenUrls = new Set(), compSeenTitles = new Set();
+    competitors = competitors.filter(a => {
+      const cu = cleanUrl(a.url);
+      const nt = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
+      if (cu && compSeenUrls.has(cu))  return false;
+      if (compSeenTitles.has(nt))      return false;
+      if (cu) compSeenUrls.add(cu);
+      compSeenTitles.add(nt);
+      return true;
+    });
+    competitors.sort((a, b) => new Date(b.date) - new Date(a.date));
+    competitors = competitors.slice(0, 80);
+
+    // Deduplicate OEMs
+    oems = oems.filter(a => a.url && a.title && a.title.length > 10);
+    const oemSeenUrls = new Set(), oemSeenTitles = new Set();
+    oems = oems.filter(a => {
+      const cu = cleanUrl(a.url);
+      const nt = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
+      if (cu && oemSeenUrls.has(cu))  return false;
+      if (oemSeenTitles.has(nt))      return false;
+      if (cu) oemSeenUrls.add(cu);
+      oemSeenTitles.add(nt);
+      return true;
+    });
+    oems.sort((a, b) => new Date(b.date) - new Date(a.date));
+    oems = oems.slice(0, 100);
 
     const seenUrls = new Set(), seenSlugs = new Set(), seenTitles = new Set();
     articles = articles.filter(a => {
@@ -284,13 +612,13 @@ module.exports = async function handler(req, res) {
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     articles = articles.slice(0, 150);
 
-    const sources = { rss: rssR.flat().length, reddit: redditR.flat().length, google: googleR.flat().length, bing: bingR.flat().length, ai: aiR.flat().length };
-    console.log(`[HRC] RSS=${sources.rss} Reddit=${sources.reddit} Google=${sources.google} Bing=${sources.bing} AI=${sources.ai} → final: ${articles.length}`);
+    const sources = { rss: rssR.flat().length, reddit: redditR.flat().length, google: googleR.flat().length, bing: bingR.flat().length, ai: aiR.flat().length, competitors: competitors.length, oems: oems.length };
+    console.log(`[HRC] RSS=${sources.rss} Reddit=${sources.reddit} Google=${sources.google} Bing=${sources.bing} AI=${sources.ai} Competitors=${sources.competitors} OEMs=${sources.oems} → final: ${articles.length}`);
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(200).json({ articles, fetchedAt: new Date().toISOString(), count: articles.length, sources });
+    res.status(200).json({ articles, competitors, oems, fetchedAt: new Date().toISOString(), count: articles.length, sources });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
