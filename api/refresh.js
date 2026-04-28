@@ -250,7 +250,7 @@ function parseRSS(xml, feedSource) {
 
 async function fetchRSS(feed) {
   try {
-    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout(8000) });
+    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined });
     if (!res.ok) return [];
     const xml = await res.text();
     return parseRSS(xml, feed.source).map(item => ({
@@ -269,7 +269,7 @@ async function fetchReddit(sub) {
     const url = sub.query
       ? `https://www.reddit.com/r/${sub.subreddit}/search.json?q=${encodeURIComponent(sub.query)}&sort=new&limit=10&restrict_sr=1&t=week`
       : `https://www.reddit.com/r/${sub.subreddit}/new.json?limit=15`;
-    const res = await fetch(url, { headers: { 'User-Agent': 'HRC-CompositesHub/1.0' }, signal: AbortSignal.timeout(8000) });
+    const res = await fetch(url, { headers: { 'User-Agent': 'HRC-CompositesHub/1.0' }, signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined });
     if (!res.ok) return [];
     const data = await res.json();
     return (data?.data?.children || [])
@@ -293,7 +293,7 @@ async function fetchReddit(sub) {
 async function fetchGoogle(query, apiKey, cseId) {
   try {
     const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cseId}&q=${encodeURIComponent(query.q)}&num=5&dateRestrict=w1&sort=date`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    const res = await fetch(url, { signal: AbortSignal.timeout ? AbortSignal.timeout(10000) : undefined });
     if (!res.ok) return [];
     const data = await res.json();
     return (data.items || []).map(item => ({
@@ -312,7 +312,7 @@ async function fetchGoogle(query, apiKey, cseId) {
 async function fetchBing(query, apiKey) {
   try {
     const url = `https://api.bing.microsoft.com/v7.0/news/search?q=${encodeURIComponent(query.q)}&freshness=Week&count=5&mkt=en-US&sortBy=Date`;
-    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout(10000) });
+    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout ? AbortSignal.timeout(10000) : undefined });
     if (!res.ok) return [];
     const data = await res.json();
     return (data.value || []).map(item => ({
@@ -355,7 +355,7 @@ async function fetchOpenAI(apiKey, regionPrompt) {
 
 async function fetchOemRSS(feed) {
   try {
-    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout(8000) });
+    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined });
     if (!res.ok) return [];
     const xml = await res.text();
     return parseRSS(xml, feed.source).map(item => ({
@@ -402,7 +402,7 @@ async function fetchOemAI(apiKey) {
 
 async function fetchOemRSS(feed) {
   try {
-    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout(8000) });
+    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined });
     if (!res.ok) return [];
     const xml = await res.text();
     return parseRSS(xml, feed.source).map(item => ({
@@ -419,7 +419,7 @@ async function fetchOemRSS(feed) {
 async function fetchOemBing(query, apiKey) {
   try {
     const url = `https://api.bing.microsoft.com/v7.0/news/search?q=${encodeURIComponent(query.q)}&freshness=Week&count=3&mkt=en-US&sortBy=Date`;
-    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout(10000) });
+    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout ? AbortSignal.timeout(10000) : undefined });
     if (!res.ok) return [];
     const data = await res.json();
     return (data.value || []).map(item => ({
@@ -457,7 +457,7 @@ async function fetchOemAI(apiKey) {
 
 async function fetchCompetitorRSS(feed) {
   try {
-    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout(8000) });
+    const res = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HRC-Hub/1.0)' }, signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined });
     if (!res.ok) return [];
     const xml = await res.text();
     return parseRSS(xml, feed.source).map(item => ({
@@ -477,7 +477,7 @@ async function fetchCompetitorRSS(feed) {
 async function fetchCompetitorBing(query, apiKey) {
   try {
     const url = `https://api.bing.microsoft.com/v7.0/news/search?q=${encodeURIComponent(query.q)}&freshness=Week&count=3&mkt=en-US&sortBy=Date`;
-    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout(10000) });
+    const res = await fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': apiKey }, signal: AbortSignal.timeout ? AbortSignal.timeout(10000) : undefined });
     if (!res.ok) return [];
     const data = await res.json();
     return (data.value || []).map(item => ({
