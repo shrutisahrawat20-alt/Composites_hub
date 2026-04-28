@@ -30,48 +30,6 @@ const RSS_FEEDS = [
   { url: 'https://www.h2-view.com/news/all-news/feed/',          source: 'H2 View',                region: 'global', sector: 'construction' },
 ];
 
-// ── OEM TRACKING ─────────────────────────────────────────────────────────────
-const OEMS = [
-  // Aerospace
-  'Airbus','Boeing','COMAC','Embraer',
-  // Hypercars / Supercars
-  'McLaren','Ferrari','Lamborghini','Bugatti','Pagani','Koenigsegg',
-  'Aston Martin','Maserati','Rimac','Pininfarina','Lotus','Dallara',
-  'Czinger','Zenvo','SSC North America','Hennessey',
-  // Premium performance
-  'Mercedes-AMG','Audi Sport','Alfa Romeo','Lexus',
-  'Toyota Gazoo Racing','Nissan Nismo','Honda NSX',
-  'Cadillac Racing','Polestar','Hyundai N','Jaguar','Range Rover',
-  'Rolls-Royce','Bentley','Alpine Cars','KTM',
-  'Lucid Motors','Tesla','Dodge SRT','Subaru STI','Mitsubishi Ralliart',
-  // eVTOL
-  'Joby Aviation','Lilium','Archer Aviation','Wisk Aero','Volocopter',
-];
-
-// Google News RSS per OEM — free, no key needed
-const OEM_RSS = OEMS.map(o => ({
-  url: `https://news.google.com/rss/search?q=${encodeURIComponent('"' + o + '" composite OR "carbon fiber" OR CFRP OR lightweight')}&hl=en-US&gl=US&ceid=US:en`,
-  source: 'Google News',
-  region: 'global',
-  sector: 'oem',
-  oem: o,
-}));
-
-// Bing queries for OEMs
-const OEM_BING = OEMS.map(o => ({
-  q: `"${o}" carbon fiber composite lightweight programme`,
-  region: 'global',
-  sector: 'oem',
-  oem: o,
-}));
-
-// OpenAI OEM brief
-const OEM_AI_PROMPT = {
-  prompt: `Search for the latest news from the last 7 days about these automotive and aerospace OEMs launching new models, programmes or vehicles that use carbon fiber, CFRP or composite materials: Mercedes-AMG, Audi Sport, Alfa Romeo, Maserati, Lotus, Rimac, Lexus, Toyota Gazoo Racing, Nissan Nismo, Cadillac, Polestar, Hyundai N, Jaguar, Range Rover, Rolls-Royce, Bentley, Alpine, Dallara, KTM, Czinger, Hennessey, Pininfarina, Lucid Motors, Tesla, Dodge SRT, Subaru STI, Joby Aviation, Lilium, Archer Aviation, Airbus, Boeing, COMAC.
-
-Focus on: new model launches, programme announcements, lightweighting targets, composite content, new platforms. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"2 sentence summary of the launch or programme","sector":"oem","source":"publication name","url":"https://...","date":"YYYY-MM-DD","oem":"OEM Name"}]. Return up to 15 items.`,
-};
-
 // ── COMPETITOR TRACKING ───────────────────────────────────────────────────────
 // Key players: Toray, Hexcel, SGL Carbon, Solvay, Teijin, Cytec, Owens Corning,
 // Mitsubishi Chemical, Chomarat, Saertex, Porcher, Hexion
@@ -82,31 +40,33 @@ const COMPETITORS = [
 ];
 
 // ── OEM TRACKING ─────────────────────────────────────────────────────────────
-const OEMS = {
-  aerospace: ['Airbus','Boeing','COMAC','Embraer','Safran','Leonardo','Dassault'],
-  automotive: ['BMW','Mercedes-Benz','Audi','Toyota','Volkswagen','Stellantis','Lamborghini','Ferrari'],
-  evtol: ['Joby Aviation','Lilium','Archer Aviation','Wisk','Vertical Aerospace','EHang','AutoFlight'],
-};
-const ALL_OEMS = [...OEMS.aerospace, ...OEMS.automotive, ...OEMS.evtol];
+const ALL_OEMS = [
+  // Hypercars
+  'McLaren','Ferrari','Lamborghini','Bugatti','Pagani','Koenigsegg',
+  'Aston Martin','Maserati','Rimac','Pininfarina','Lotus','Dallara',
+  'Czinger','Zenvo','SSC North America','Hennessey',
+  // Premium performance
+  'Mercedes-AMG','Audi Sport','Alfa Romeo','Lexus','Toyota Gazoo Racing',
+  'Nissan Nismo','Cadillac','Polestar','Hyundai N','Jaguar','Range Rover',
+  'Rolls-Royce','Bentley','Alpine','KTM','Lucid Motors','Tesla',
+  'Dodge SRT','Subaru STI','Mitsubishi Ralliart',
+  // Aerospace
+  'Airbus','Boeing','COMAC','Embraer','Safran','Leonardo',
+  // eVTOL
+  'Joby Aviation','Lilium','Archer Aviation','Wisk Aero','Volocopter','Vertical Aerospace',
+];
 
-// Google News RSS per OEM — searching for composite/lightweighting/new programme news
 const OEM_RSS = ALL_OEMS.map(oem => ({
-  url: `https://news.google.com/rss/search?q=${encodeURIComponent('"' + oem + '" composite OR carbon fiber OR lightweight OR CFRP OR programme')}&hl=en-US&gl=US&ceid=US:en`,
-  source: 'Google News',
-  region: OEMS.aerospace.includes(oem) ? 'global' : OEMS.evtol.includes(oem) ? 'global' : 'global',
-  sector: 'oem',
-  oem,
-  oemGroup: OEMS.aerospace.includes(oem) ? 'Aerospace' : OEMS.evtol.includes(oem) ? 'eVTOL' : 'Automotive',
+  url: `https://news.google.com/rss/search?q=${encodeURIComponent('"' + oem + '" composite OR "carbon fiber" OR CFRP OR lightweight OR programme')}&hl=en-US&gl=US&ceid=US:en`,
+  source: 'Google News', region: 'global', sector: 'oem', oem,
 }));
 
-// OpenAI OEM prompt
-const OEM_AI_PROMPT = `Search for the latest news from these OEMs published in the last 14 days, specifically about: new aircraft/vehicle programmes, composite material content announcements, lightweighting targets, new model launches, supply chain changes, or composite component contracts.
+const OEM_BING = ALL_OEMS.map(oem => ({
+  q: '"' + oem + '" carbon fiber composite lightweight',
+  region: 'global', sector: 'oem', oem,
+}));
 
-Aerospace OEMs: Airbus, Boeing, COMAC, Embraer, Safran
-Automotive OEMs: BMW, Mercedes-Benz, Audi, Toyota, Volkswagen, Lamborghini, Ferrari
-eVTOL OEMs: Joby Aviation, Lilium, Archer Aviation, Wisk, Vertical Aerospace, EHang
-
-Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"2 sentence summary focused on composite/lightweight relevance","sector":"oem","source":"publication name","url":"https://...","date":"YYYY-MM-DD","oem":"Company Name","oemGroup":"Aerospace|Automotive|eVTOL"}]. Return up to 20 items.`;
+const OEM_AI_PROMPT = 'Search for the latest news from the last 7 days about these OEMs using carbon fiber, CFRP or composites: McLaren, Ferrari, Lamborghini, Bugatti, Pagani, Koenigsegg, Aston Martin, Rimac, Czinger, Mercedes-AMG, Rolls-Royce, Bentley, Polestar, Tesla, Airbus, Boeing, COMAC, Joby Aviation, Lilium, Archer Aviation. Focus on new models, composite content, lightweighting. Return ONLY a JSON array, no markdown. Format: [{"title":"...","summary":"2 sentence summary","sector":"oem","source":"publication","url":"https://...","date":"YYYY-MM-DD","oem":"Company Name"}]. Return up to 15 items.';
 
 // Google News RSS — one feed per competitor (free, no key needed)
 const COMPETITOR_RSS = COMPETITORS.map(c => ({
@@ -579,21 +539,6 @@ module.exports = async function handler(req, res) {
     });
     competitors.sort((a, b) => new Date(b.date) - new Date(a.date));
     competitors = competitors.slice(0, 80);
-
-    // Deduplicate OEMs
-    oems = oems.filter(a => a.url && a.title && a.title.length > 10);
-    const oemSeenUrls = new Set(), oemSeenTitles = new Set();
-    oems = oems.filter(a => {
-      const cu = cleanUrl(a.url);
-      const nt = a.title.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().slice(0, 60);
-      if (cu && oemSeenUrls.has(cu))  return false;
-      if (oemSeenTitles.has(nt))      return false;
-      if (cu) oemSeenUrls.add(cu);
-      oemSeenTitles.add(nt);
-      return true;
-    });
-    oems.sort((a, b) => new Date(b.date) - new Date(a.date));
-    oems = oems.slice(0, 100);
 
     const seenUrls = new Set(), seenSlugs = new Set(), seenTitles = new Set();
     articles = articles.filter(a => {
